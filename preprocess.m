@@ -3,8 +3,7 @@
 %  Purpose: preprocess the extracted 
 %  parameters before feeding in GLM 
 %  Last edit time: 11/28/2023
-%  Last edit made: Save each input as individual 
-%      with dir name ../data/Subjects/animal/session#
+%  Last edit made: change stim val from {1,2} t0 {0,1} etc.
 % ===========================================
 % --------- DATA TO BE PROCESSED ------------
 % corr_arr =  {-2, -1, 1} = {missed, incorrect, correct}
@@ -17,9 +16,9 @@
 % rxt_arr: reaction times
 % -------------- DATA WE NEED ---------------
 % choice = currrent trial choice
-% stim = {1, 2} = {vertical, horizontal}
-% flanker = {1, 2}
-% flankerContrast (relative) = stim cont - flanker cont 
+% stim = {0, 1} = {vertical, horizontal}
+% flanker = {0, 1}
+% flankerContrast (relative) = stim cont - flanker cont [-6,2]
 % rewarded = {1, -1} = {rewarded/correct, unrewarded/incorrect}
 % trialType  = {0, 1, 2} =  {no flanker, congruent, incongruent}
 % reactionT = reaction time 
@@ -52,11 +51,11 @@ for session_id = 1:length(mdata)
     session_data = mdata{session_id};
 
     % get stim history 
-    stim = session_data.target_type_arr + 1;
+    stim = session_data.target_type_arr;
     save([save_path '/stim.mat'],"stim")
 
-    flanker = session_data.dist_type_arr + 1;
-    id_no_flanker = flanker==10; %idx of trials where there's no flanker
+    flanker = session_data.dist_type_arr;
+    id_no_flanker = flanker==9; %idx of trials where there's no flanker
     flanker(id_no_flanker) = 0; % no distractor/flanker situation
     save([save_path '/flanker.mat'],"flanker")
     
@@ -65,12 +64,13 @@ for session_id = 1:length(mdata)
     if rewarded
         choice = stim;
     else
-        choice = 3 - stim;
+        choice = 1 - stim;
     end
     save([save_path '/choice.mat'],"choice")
     
     flankerContrast = session_data.dist_cont_arr - target_contrast;
     flankerContrast(id_no_flanker) = 0;
+    assert(min(flankerContrast) >= -6 & max(flankerContrast) <=2, 'flanker contrast error')
     save([save_path '/flankerContrast.mat'],"flankerContrast")
 
     trialType = session_data.cong_tr_arr + 1;
@@ -95,7 +95,7 @@ function wsls =  create_wsls_covariate(prevChoice, rewarded)
 %{
 inputs:
     rewarded: {-1, 1}, -1 corresponds to failure, 1 corresponds to success
-    prevChoice: {1,2} and 1 corresponds to vertical, 2 corresponds to
+    prevChoice: {0,1} and 0 corresponds to vertical, 1 corresponds to
     horizontal
 output:
     wsls: {-1, 1}.  
@@ -106,7 +106,8 @@ output:
 %}
 
 % remap choice vals
-remapped_choice = prevChoice * 2 - 3;
+remapped_choice = prevChoice * 2 - 1;
+assert(sum(unique(remapped_choice) == [-1,1])==2,'remapping error')
 pre_rewarded = horzcat(rewarded(1),rewarded); pre_rewarded = pre_rewarded(1:end-1);
 wsls = remapped_choice .* pre_rewarded;
 assert(length(unique(wsls)) == 2, "wsls should be in {-1, 1}")
