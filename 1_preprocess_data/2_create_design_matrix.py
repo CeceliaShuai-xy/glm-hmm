@@ -50,13 +50,14 @@ if __name__ == '__main__':
             animal, unnormalized_inpt, y, session, rewarded = \
                 get_all_unnormalized_data_this_session(
                     eid)
+            # pdb.set_trace()
             if sess_counter == 0:
                 animal_unnormalized_inpt = np.copy(unnormalized_inpt)
                 animal_y = np.copy(y)
                 animal_session = session
                 animal_rewarded = np.copy(rewarded)
             else:
-                pdb.set_trace()
+                #pdb.set_trace()
                 animal_unnormalized_inpt = np.vstack(
                     (animal_unnormalized_inpt, unnormalized_inpt))
                 animal_y = np.vstack((animal_y, y))
