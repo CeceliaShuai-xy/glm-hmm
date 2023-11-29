@@ -7,10 +7,10 @@ Last edit made:
 '''
 ## DATA WE WANT
 # -------------- DATA WE NEED ---------------
-#  y = currrent trial choice
-# choice = currrent trial choice
-# stim = {1, 2} = {vertical, horizontal}
-# flanker = {1, 2}
+#  y = currrent trial choice -> {1,2} => NOW CHANGE TO {0,1}
+# choice = currrent trial choice => NOW CHANGE TO {0,1}
+# stim = {1, 2} = {vertical, horizontal} => NOW CHANGE TO {0,1}
+# flanker = {1, 2} => NOW CHANGE TO {0,1}
 # flankerContrast (relative) = stim cont - flanker cont 
 # rewarded = {1, -1} = {rewarded/correct, unrewarded/incorrect}
 # trialType  = {0, 1, 2} =  {no flanker, congruent, incongruent}

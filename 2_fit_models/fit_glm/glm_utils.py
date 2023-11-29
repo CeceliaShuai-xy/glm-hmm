@@ -2,6 +2,7 @@ import autograd.numpy as np
 import autograd.numpy.random as npr
 import matplotlib.pyplot as plt
 from GLM import glm
+import pdb
 
 npr.seed(65)
 
@@ -64,7 +65,6 @@ def plot_input_vectors(Ws,
                         top=0.95,
                         wspace=0.3,
                         hspace=0.3)
-
     for j in range(K):
         for k in range(K_prime - 1):
             # plt.subplot(K, K_prime, 1+j*K_prime+k)

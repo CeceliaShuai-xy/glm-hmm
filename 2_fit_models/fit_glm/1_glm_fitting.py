@@ -3,7 +3,7 @@ Author Cecelia Shuai
 Created date: 11/29/2023
 Purpose: feed extracted input to GLM with 3-fold CV
 Last edit time: 11/29/2023
-Last edit made: 
+Last edit made: try reduce the parameters
 '''
 # Fit GLM to each IBL animal separately
 import autograd.numpy as np
@@ -11,6 +11,7 @@ import autograd.numpy.random as npr
 import os
 from glm_utils import load_session_fold_lookup, load_data, load_animal_list, \
     fit_glm, plot_input_vectors, append_zeros
+import pdb
 
 npr.seed(65)
 
@@ -41,6 +42,9 @@ if __name__ == '__main__':
             labels_for_plot = ['stim', 'flanker', 'flanker_contrast',\
                                'rewarded', 'trialType', 'reactionT', \
                                  'wsls', 'prevType', 'prevChoice', 'bias']
+            # labels_for_plot = ['stim', 'flanker_contrast',\
+            #                    'trialType', 'wsls', 'bias']
+
             y = y.astype('int')
 
             figure_directory = this_results_dir + "GLM/fold_" + str(fold) + '/'
@@ -65,6 +69,7 @@ if __name__ == '__main__':
             M = this_inpt.shape[1]
             loglikelihood_train_vector = []
 
+            pdb.set_trace()
             for iter in range(N_initializations):
                 loglikelihood_train, recovered_weights = fit_glm([this_inpt],
                                                                  [this_y], M,

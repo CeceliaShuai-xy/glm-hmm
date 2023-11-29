@@ -145,6 +145,9 @@ def create_stim_vector(stim_left, stim_right):
 
 def create_design_mat(stim, flanker, flanker_contrast,\
           rewarded, trialType, reactionT, wsls, prevType, prevChoice):
+# (stim, flanker_contrast, \
+#                                         trialType, wsls):
+
     
     # Create unnormalized_inpt
     # with first column = stim_right - stim_left,
@@ -152,15 +155,22 @@ def create_design_mat(stim, flanker, flanker_contrast,\
     
     T = stim.shape[1]
     design_mat = np.zeros((T, 9))
-    design_mat[:, 0] = stim
-    design_mat[:, 1] = flanker
+    design_mat[:, 0] = stim 
+    design_mat[:, 1] = flanker 
     design_mat[:, 2] = flanker_contrast
     design_mat[:, 3] = rewarded
     design_mat[:, 4] = trialType
     design_mat[:, 5] = reactionT
     design_mat[:, 6] = wsls
     design_mat[:, 7] = prevType
-    design_mat[:, 8] = prevChoice
+    design_mat[:, 8] = prevChoice 
+    # return design_mat
+    # T = stim.shape[1]
+    # design_mat = np.zeros((T, 4))
+    # design_mat[:, 0] = stim - 1
+    # design_mat[:, 1] = flanker_contrast
+    # design_mat[:, 2] = trialType 
+    # design_mat[:, 3] = wsls
     return design_mat
 
 
@@ -170,14 +180,18 @@ def get_all_unnormalized_data_this_session(eid):
           rewarded, trialType, reactionT, wsls, prevType, prevChoice \
         = get_raw_data(eid)
     
+    
  
+ # 11/29: change to fewer params 
     # Create design mat = matrix of size T x 9
     unnormalized_inpt = create_design_mat(stim, flanker, \
                                         flanker_contrast, rewarded, \
                                         trialType, reactionT, wsls, \
                                         prevType, prevChoice)
+    # unnormalized_inpt = create_design_mat(stim, flanker_contrast, \
+    #                                     trialType, wsls)
     # y = np.expand_dims(choice, axis=1)
-    y = choice.reshape(-1,1)
+    y = choice.reshape(-1,1) 
     session = [session_id for i in range(y.shape[0])]
     rewarded = rewarded.reshape(-1,1)
 
