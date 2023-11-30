@@ -3,7 +3,9 @@
 %  Purpose: preprocess the extracted 
 %  parameters before feeding in GLM 
 %  Last edit time: 11/28/2023
-%  Last edit made: change choice val from {1,2} to {0,1}
+%  Last edit made: - change choice val from {1,2} to {0,1}(11/29)
+%                  - remove some redundant var (flanker,
+%                  reactT,prevType&Choice (11/30)
 %  TODOs: visualization of the performance
 % ===========================================
 % --------- DATA TO BE PROCESSED ------------
@@ -51,17 +53,34 @@ for session_id = 1:length(mdata)
 
     session_data = mdata{session_id};
 
+    %idx of trials where there's no flanker
+    id_no_flanker = find(session_data.dist_cont_arr==0); 
+    temp_contr = session_data.dist_cont_arr - target_contrast;
+
+    idx_weaker_flanker = find(temp_contr <= -3); % weaker flanker
+    idx_stronger_flanker = find(temp_contr >=0);  % stronger contrast
+
+    Acommon = intersect(id_no_flanker,idx_weaker_flanker);
+    idx_weaker_flanker = setxor(idx_weaker_flanker,Acommon);
+       
+    trials_to_keep = sort([idx_weaker_flanker idx_stronger_flanker]);
+    
+    temp_contr(idx_weaker_flanker) = 1;
+    temp_contr(idx_stronger_flanker) = 2;
+    flanker_contrast = temp_contr(trials_to_keep);
+    assert(length(unique(flanker_contrast)) == 2, "flanker_contrast should be in {1, 2}")
+    save([save_path '/flankerContrast.mat'],"flanker_contrast")
+
+
     % get stim history 
     stim = session_data.target_type_arr + 1;
+    stim = stim(trials_to_keep);
     save([save_path '/stim.mat'],"stim")
 
-    flanker = session_data.dist_type_arr + 1;
-    id_no_flanker = flanker==10; %idx of trials where there's no flanker
-    flanker(id_no_flanker) = 0; % no distractor/flanker situation
-    save([save_path '/flanker.mat'],"flanker")
-    
     rewarded = session_data.corr_arr;
+    rewarded = rewarded(trials_to_keep);
     save([save_path '/rewarded.mat'],"rewarded")
+
     if rewarded %stim {1,2}, choice {0,1}
         choice = stim - 1;
     else
@@ -69,24 +88,12 @@ for session_id = 1:length(mdata)
     end
     save([save_path '/choice.mat'],"choice")
     
-    flankerContrast = session_data.dist_cont_arr - target_contrast;
-    flankerContrast(id_no_flanker) = 0;
-    assert(min(flankerContrast) >= -6 & max(flankerContrast) <=2, 'flanker contrast error')
-    save([save_path '/flankerContrast.mat'],"flankerContrast")
-
+    
     trialType = session_data.cong_tr_arr + 1;
-    trialType(id_no_flanker) = 0;
+    trialType = trialType(trials_to_keep);
     save([save_path '/trialType.mat'],"trialType")
 
-    reactionT = session_data.rxt_arr';
-    save([save_path '/reactionT.mat'],"reactionT")
-
-    prevType = horzcat(trialType(1),trialType); prevType = prevType(1:end-1);
-    save([save_path '/prevType.mat'],"prevType")
-
     prevChoice = horzcat(choice(1),choice); prevChoice = prevChoice(1:end-1);
-    save([save_path '/prevChoice.mat'],"prevChoice")
-
     wsls = create_wsls_covariate(prevChoice, rewarded);
     save([save_path '/wsls.mat'],"wsls")
 
