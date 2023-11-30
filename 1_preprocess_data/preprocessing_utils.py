@@ -143,7 +143,7 @@ def create_stim_vector(stim_left, stim_right):
 #     return new_choice_vector
 
 
-def create_design_mat(stim, flanker, flanker_contrast,\
+def create_design_mat(flanker, stim, flanker_contrast,\
           rewarded, trialType, reactionT, wsls, prevType, prevChoice):
 # (stim, flanker_contrast, \
 #                                         trialType, wsls):
@@ -155,8 +155,8 @@ def create_design_mat(stim, flanker, flanker_contrast,\
     
     T = stim.shape[1]
     design_mat = np.zeros((T, 9))
-    design_mat[:, 0] = stim 
-    design_mat[:, 1] = flanker 
+    design_mat[:, 1] = stim 
+    design_mat[:, 0] = flanker 
     design_mat[:, 2] = flanker_contrast
     design_mat[:, 3] = rewarded
     design_mat[:, 4] = trialType
@@ -184,7 +184,7 @@ def get_all_unnormalized_data_this_session(eid):
  
  # 11/29: change to fewer params 
     # Create design mat = matrix of size T x 9
-    unnormalized_inpt = create_design_mat(stim, flanker, \
+    unnormalized_inpt = create_design_mat(flanker, stim, \
                                         flanker_contrast, rewarded, \
                                         trialType, reactionT, wsls, \
                                         prevType, prevChoice)
@@ -221,7 +221,7 @@ def load_data(animal_file):
     return inpt, y, session
 
 
-def create_train_test_sessions(session, num_folds=3):
+def create_train_test_sessions(session, num_folds=5):
     # create a session-fold lookup table
     num_sessions = len(np.unique(session))
     # Map sessions to folds:

@@ -20,7 +20,7 @@ Last edit made:
 # prevType = {0, 1, 2} = {no flanker, congruent, incongruent}
 
 import numpy as np
-from sklearn import preprocessing
+from sklearn.preprocessing import StandardScaler
 import numpy.random as npr
 import os
 import json
@@ -82,7 +82,7 @@ if __name__ == '__main__':
             animal_unnormalized_inpt, animal_y,
             animal_session)
         animal_session_fold_lookup = create_train_test_sessions(animal_session,
-                                                                3)
+                                                                5)
         np.savez(
             save_path_individual + animal +
             "_session_fold_lookup" +
@@ -126,7 +126,8 @@ if __name__ == '__main__':
 
     pdb.set_trace() # break here to check master_inpt now
 
-    normalized_inpt[:, 0] = preprocessing.scale(normalized_inpt[:, 0])
+    scaler = StandardScaler()
+    normalized_inpt = scaler.fit_transform(normalized_inpt)
     np.savez(save_path_cluster + 'all_animals_concat' + '.npz',
              normalized_inpt,
              master_y, master_session)
