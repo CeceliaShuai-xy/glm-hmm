@@ -3,7 +3,8 @@
 %  Purpose: preprocess the extracted 
 %  parameters before feeding in GLM 
 %  Last edit time: 11/28/2023
-%  Last edit made: change stim val from {1,2} t0 {0,1} etc.
+%  Last edit made: change choice val from {1,2} to {0,1}
+%  TODOs: visualization of the performance
 % ===========================================
 % --------- DATA TO BE PROCESSED ------------
 % corr_arr =  {-2, -1, 1} = {missed, incorrect, correct}
@@ -16,8 +17,8 @@
 % rxt_arr: reaction times
 % -------------- DATA WE NEED ---------------
 % choice = currrent trial choice
-% stim = {0, 1} = {vertical, horizontal}
-% flanker = {0, 1}
+% stim = {1, 2} = {vertical, horizontal}
+% flanker = {0, 1, 2}
 % flankerContrast (relative) = stim cont - flanker cont [-6,2]
 % rewarded = {1, -1} = {rewarded/correct, unrewarded/incorrect}
 % trialType  = {0, 1, 2} =  {no flanker, congruent, incongruent}
@@ -51,20 +52,20 @@ for session_id = 1:length(mdata)
     session_data = mdata{session_id};
 
     % get stim history 
-    stim = session_data.target_type_arr;
+    stim = session_data.target_type_arr + 1;
     save([save_path '/stim.mat'],"stim")
 
-    flanker = session_data.dist_type_arr;
-    id_no_flanker = flanker==9; %idx of trials where there's no flanker
+    flanker = session_data.dist_type_arr + 1;
+    id_no_flanker = flanker==10; %idx of trials where there's no flanker
     flanker(id_no_flanker) = 0; % no distractor/flanker situation
     save([save_path '/flanker.mat'],"flanker")
     
     rewarded = session_data.corr_arr;
     save([save_path '/rewarded.mat'],"rewarded")
-    if rewarded
-        choice = stim;
+    if rewarded %stim {1,2}, choice {0,1}
+        choice = stim - 1;
     else
-        choice = 1 - stim;
+        choice = 2 - stim;
     end
     save([save_path '/choice.mat'],"choice")
     
