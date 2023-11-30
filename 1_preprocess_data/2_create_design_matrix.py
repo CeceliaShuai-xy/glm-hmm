@@ -32,15 +32,25 @@ npr.seed(65)
 
 if __name__ == '__main__':
     data_path = "/Users/cecelia/Desktop/glm-hmm/data/"
+    save_path_cluster = data_path + "data_for_cluster/"
     # Create directories for saving data:
-    if not os.path.exists(data_path + "data_by_animal/"):
-        os.makedirs(data_path + "data_by_animal/")
+    if not os.path.exists(save_path_cluster):
+        os.makedirs(save_path_cluster)
+
+    save_path_individual = save_path_cluster + "data_by_animal/"
+    # Create directories for saving data:
+    if not os.path.exists(save_path_individual):
+        os.makedirs(save_path_individual)
 
     # Load animal list/results of partial processing:
     animal_list = load_animal_list(
         data_path + 'partially_processed/animal_list.npz')
     animal_eid_dict = load_animal_eid_dict(
         data_path + 'partially_processed/animal_eid_dict.json')
+
+    # Identify idx in master array where each animal's data starts and ends:
+    animal_start_idx = {}
+    animal_end_idx = {}
 
 # stack all sessions together for each individual animal
     final_animal_eid_dict = defaultdict(list)
@@ -67,29 +77,92 @@ if __name__ == '__main__':
             final_animal_eid_dict[animal].append(eid)
         # Write out animal's unnormalized data matrix:
         np.savez(
-            data_path + 'data_by_animal/' + animal +
+            save_path_individual + animal +
             '_unnormalized.npz',
             animal_unnormalized_inpt, animal_y,
             animal_session)
         animal_session_fold_lookup = create_train_test_sessions(animal_session,
                                                                 3)
         np.savez(
-            data_path + 'data_by_animal/' + animal +
+            save_path_individual + animal +
             "_session_fold_lookup" +
             ".npz",
             animal_session_fold_lookup)
         np.savez(
-            data_path + 'data_by_animal/' + animal +
+            save_path_individual + animal +
             '_rewarded.npz',
             animal_rewarded)
         assert animal_rewarded.shape[0] == animal_y.shape[0]
-    # master list that include all animals' data is omitte here
+        # Now create or append data to master array across all animals:
+        if z == 0:
+            master_inpt = np.copy(animal_unnormalized_inpt)
+            animal_start_idx[animal] = 0
+            animal_end_idx[animal] = master_inpt.shape[0] - 1
+            master_y = np.copy(animal_y)
+            master_session = animal_session
+            master_session_fold_lookup_table = animal_session_fold_lookup
+            master_rewarded = np.copy(animal_rewarded)
+        else:
+            animal_start_idx[animal] = master_inpt.shape[0]
+            master_inpt = np.vstack((master_inpt, animal_unnormalized_inpt))
+            animal_end_idx[animal] = master_inpt.shape[0] - 1
+            master_y = np.vstack((master_y, animal_y))
+            master_session = np.concatenate((master_session, animal_session))
+            master_session_fold_lookup_table = np.vstack(
+                (master_session_fold_lookup_table, animal_session_fold_lookup))
+            master_rewarded = np.vstack((master_rewarded, animal_rewarded))
     
-    np.savez(data_path + 'data_by_animal/' + 'animal_list.npz',
+    # Write out data from across animals
+    assert np.shape(master_inpt)[0] == np.shape(master_y)[
+        0], "inpt and y not same length"
+    assert np.shape(master_rewarded)[0] == np.shape(master_y)[
+        0], "rewarded and y not same length"
+    assert len(np.unique(master_session)) == \
+           np.shape(master_session_fold_lookup_table)[
+               0], "number of unique sessions and session fold lookup don't " \
+                   "match"
+
+    normalized_inpt = np.copy(master_inpt)
+
+    pdb.set_trace() # break here to check master_inpt now
+
+    normalized_inpt[:, 0] = preprocessing.scale(normalized_inpt[:, 0])
+    np.savez(save_path_cluster + 'all_animals_concat' + '.npz',
+             normalized_inpt,
+             master_y, master_session)
+    np.savez(
+        save_path_cluster + 'all_animals_concat_unnormalized' + '.npz',
+        master_inpt, master_y, master_session)
+    np.savez(
+        save_path_cluster + 'all_animals_concat_session_fold_lookup' +
+        '.npz',
+        master_session_fold_lookup_table)
+    np.savez(save_path_cluster + 'all_animals_concat_rewarded' + '.npz',
+             master_rewarded)
+    np.savez(save_path_cluster + 'data_by_animal/' + 'animal_list.npz',
              animal_list)
 
     json = json.dumps(final_animal_eid_dict)
-    f = open(data_path + "final_animal_eid_dict.json", "w")
+    f = open(save_path_cluster + "final_animal_eid_dict.json", "w")
     f.write(json)
     f.close()
+
+    # Now write out normalized data (when normalized across all animals) for
+    # each animal:
+    counter = 0
+    for animal in animal_start_idx.keys():
+        start_idx = animal_start_idx[animal]
+        end_idx = animal_end_idx[animal]
+        inpt = normalized_inpt[range(start_idx, end_idx + 1)]
+        y = master_y[range(start_idx, end_idx + 1)]
+        session = master_session[range(start_idx, end_idx + 1)]
+        counter += inpt.shape[0]
+        np.savez(save_path_cluster + 'data_by_animal/' + animal + '_processed.npz',
+                 inpt, y,
+                 session)
+
+    assert counter == master_inpt.shape[0]
+    
+    np.savez(save_path_cluster + 'data_by_animal/' + 'animal_list.npz',
+             animal_list)
 
