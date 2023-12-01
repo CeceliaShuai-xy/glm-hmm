@@ -82,7 +82,7 @@ if __name__ == '__main__':
             animal_unnormalized_inpt, animal_y,
             animal_session)
         animal_session_fold_lookup = create_train_test_sessions(animal_session,
-                                                                5)
+                                                                4)
         np.savez(
             save_path_individual + animal +
             "_session_fold_lookup" +
@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
     normalized_inpt = np.copy(master_inpt)
 
-    pdb.set_trace() # break here to check master_inpt now
+    # pdb.set_trace() # break here to check master_inpt now
 
     scaler = StandardScaler()
     normalized_inpt = scaler.fit_transform(normalized_inpt)

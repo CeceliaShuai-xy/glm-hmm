@@ -6,7 +6,7 @@ from autograd.scipy.special import logsumexp
 from ssm.util import ensure_args_are_lists
 from ssm.optimizers import adam, bfgs, rmsprop, sgd
 import ssm.stats as stats
-
+import pdb
 
 class glm(object):
     def __init__(self, M, C):
@@ -33,6 +33,7 @@ class glm(object):
     # Input is size TxM
     def calculate_logits(self, input):
         # Update input to include offset term:
+        # pdb.set_trace()
         input = np.append(input, np.ones((input.shape[0], 1)), axis=1)
         # Add additional row (of zeros) to second dimension of self.Wk
         Wk_tranpose = np.transpose(self.Wk, (1, 0, 2))
@@ -70,7 +71,7 @@ class glm(object):
                 inputs,
                 masks,
                 tags,
-                num_iters=1000,
+                num_iters=3000,
                 optimizer="bfgs",
                 **kwargs):
         optimizer = dict(adam=adam, bfgs=bfgs, rmsprop=rmsprop,

@@ -3,7 +3,6 @@ Author Cecelia Shuai
 Created date: 11/29/2023
 Purpose: feed extracted input to GLM with 3-fold CV
 Last edit time: 11/29/2023
-Last edit made: 
 '''
 # Fit GLM to each IBL animal separately
 import autograd.numpy as np
@@ -20,7 +19,7 @@ N_initializations = 10
 
 if __name__ == '__main__':
     data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
-    num_folds = 5
+    num_folds = 4
 
     animal_file = data_dir + 'all_animals_concat.npz'
     inpt, y, session = load_data(animal_file)
@@ -33,12 +32,8 @@ if __name__ == '__main__':
     
     # Fit GLM to data from single animal:
     for fold in range(num_folds):
-        labels_for_plot = ['flanker', 'stim',  'flanker_contrast',\
-                            'rewarded', 'trialType', 'reactionT', \
-                                'wsls', 'prevType', 'prevChoice', 'bias']
-        # labels_for_plot = ['stim', 'flanker_contrast',\
-        #                    'trialType', 'wsls', 'bias']
-
+        labels_for_plot = [ 'stim','rewarded', 'trialType', 'wsls', 'bias']
+        #
         y = y.astype('int')
 
         figure_directory = results_dir + "GLM/fold_" + str(fold) + '/'
@@ -46,15 +41,31 @@ if __name__ == '__main__':
             os.makedirs(figure_directory)
 
         # Subset to sessions of interest for fold
+        # pdb.set_trace()
         sessions_to_keep = session_fold_lookup_table[np.where(
             session_fold_lookup_table[:, 1] != fold), 0]
+
         idx_this_fold = [
             str(sess) in sessions_to_keep and y[id, 0] != -1
             for id, sess in enumerate(session)
         ]
+
         this_inpt, this_y, this_session = inpt[idx_this_fold, :], \
                                             y[idx_this_fold, :], \
                                             session[idx_this_fold]
+        
+        # Add test data
+        sessions_to_test = session_fold_lookup_table[np.where(
+            session_fold_lookup_table[:, 1] == fold), 0]
+        
+        idx_test = [
+            str(sess) in sessions_to_test and y[id, 0] != -1
+            for id, sess in enumerate(session)
+        ]
+        test_inpt, test_y, test_session = inpt[idx_test, :], \
+                                            y[idx_test, :], \
+                                            session[idx_test]
+
         assert len(
             np.unique(this_y)
         ) == 2, "choice vector should only include 2 possible values"
@@ -78,4 +89,5 @@ if __name__ == '__main__':
             np.savez(
                 figure_directory + 'variables_of_interest_iter_' +
                 str(iter) + '.npz', loglikelihood_train, recovered_weights)
+            
             

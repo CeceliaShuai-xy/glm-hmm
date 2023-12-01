@@ -55,23 +55,28 @@ for session_id = 1:length(mdata)
 
     %idx of trials where there's no flanker
     id_no_flanker = find(session_data.dist_cont_arr==0); 
+    % idx of weak/stronger flanker contrast
     temp_contr = session_data.dist_cont_arr - target_contrast;
-
-    idx_weaker_flanker = find(temp_contr <= -3); % weaker flanker
+    temp_weak_id = find(temp_contr <= -3); % weaker flanker
     idx_stronger_flanker = find(temp_contr >=0);  % stronger contrast
-
-    Acommon = intersect(id_no_flanker,idx_weaker_flanker);
-    idx_weaker_flanker = setxor(idx_weaker_flanker,Acommon);
-       
-    trials_to_keep = sort([idx_weaker_flanker idx_stronger_flanker]);
+    Acommon = intersect(id_no_flanker,temp_weak_id);
+    idx_weaker_flanker = setxor(temp_weak_id,Acommon);
     
-    temp_contr(idx_weaker_flanker) = 1;
-    temp_contr(idx_stronger_flanker) = 2;
-    flanker_contrast = temp_contr(trials_to_keep);
-    assert(length(unique(flanker_contrast)) == 2, "flanker_contrast should be in {1, 2}")
-    save([save_path '/flankerContrast.mat'],"flanker_contrast")
+    % intermediate contrast trials are omitted
+    trials_to_keep = sort([temp_weak_id idx_stronger_flanker]);
 
+    % modify trialtype to be {-2, -1, 0, 1, 2}
+    % cong_tr_arr = {0, 1} = {incongruent, congruent}
+    trialType = session_data.cong_tr_arr;
+    trialType(trialType==0) = -1;trialType(trialType==1) = 1;
+    trialType(id_no_flanker) = 0;
+%     trialType(idx_weaker_flanker) = trialType(idx_weaker_flanker)*1;
+    trialType(idx_weaker_flanker) = trialType(idx_weaker_flanker)*2;
+    trialType = trialType(trials_to_keep);
 
+    save([save_path '/trialType.mat'],"trialType")
+
+    
     % get stim history 
     stim = session_data.target_type_arr + 1;
     stim = stim(trials_to_keep);
@@ -87,11 +92,6 @@ for session_id = 1:length(mdata)
         choice = 2 - stim;
     end
     save([save_path '/choice.mat'],"choice")
-    
-    
-    trialType = session_data.cong_tr_arr + 1;
-    trialType = trialType(trials_to_keep);
-    save([save_path '/trialType.mat'],"trialType")
 
     prevChoice = horzcat(choice(1),choice); prevChoice = prevChoice(1:end-1);
 
@@ -99,7 +99,7 @@ for session_id = 1:length(mdata)
     save([save_path '/wsls.mat'],"wsls")
 
     % not to save but to visualize inputs and y
-    X = horzcat(wsls', trialType', rewarded', flanker_contrast');
+    X = horzcat(stim', trialType', rewarded', wsls');
     y = choice';
     design_matrix = [X y];
 end
@@ -110,9 +110,35 @@ figure(1)
 plot(stim(rewarded==1),'.', 'color','b', 'MarkerSize', 10)
 hold on
 plot(stim(rewarded==-1),'.', 'color','r', 'MarkerSize', 10)
-ylim([0 3])
-text(0.5*length(stim), 2.5, ['Accuracy = ' num2str(sum(rewarded==1)/length(stim))])
+ylim([0.5 2.5])
+title(['Accuracy = ' num2str(sum(rewarded==1)/length(stim))])
 xlabel('trials')
 yticks([1 2])
 yticklabels(["vertical"; "horizontal"])
-tickangle(90)
+ytickangle(90)
+
+%% Helper functions
+function wsls =  create_wsls_covariate(prevChoice, rewarded)
+%{
+inputs:
+    rewarded: {-1, 1}, -1 corresponds to failure, 1 corresponds to success
+    prevChoice: {0,1} and 0 corresponds to vertical, 1 corresponds to
+    horizontal
+output:
+    wsls: {-1, 1}.  
+    1 corresponds to prevChoice = horz and success OR prevChoice = vert and
+    failure
+    -1 corresponds to prevChoice = vert and success OR prevChoice = horz and
+    failure
+%}
+
+% remap choice vals
+remapped_choice = prevChoice * 2 - 1;
+assert(sum(unique(remapped_choice) == [-1,1])==2,'remapping error')
+pre_rewarded = horzcat(rewarded(1),rewarded); pre_rewarded = pre_rewarded(1:end-1);
+wsls = remapped_choice .* pre_rewarded;
+assert(length(unique(wsls)) == 2, "wsls should be in {-1, 1}")
+end
+
+
+

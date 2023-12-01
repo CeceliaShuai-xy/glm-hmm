@@ -26,6 +26,7 @@ def get_animal_name(eid):
 
 
 def get_raw_data(eid):
+    # X = horzcat(stim', trialType', rewarded', wsls');
     print(eid)
     # get session id:
     raw_session_id = eid.split('Subjects/')[1]
@@ -34,25 +35,26 @@ def get_raw_data(eid):
     # replace '/' with dash in session ID
     session_id = raw_session_id.replace('/', '-')
     
-
     current_dir = os.getcwd()
     os.chdir(eid)
 
     # Get choice, stim & flanker data and rewarded/not rewarded:
     choice = sio.loadmat(eid + '/choice.mat')["choice"]
     stim = sio.loadmat(eid + '/stim.mat')["stim"]
-    flanker = sio.loadmat(eid + '/flanker.mat')["flanker"]
-    flanker_contrast = sio.loadmat(eid + '/flankerContrast.mat')["flankerContrast"]
+    # flanker_contrast = sio.loadmat(eid + '/flankerContrast.mat')["flanker_contrast"]
     rewarded = sio.loadmat(eid + '/rewarded.mat')["rewarded"]
     trialType = sio.loadmat(eid + '/trialType.mat')["trialType"]
-    reactionT = sio.loadmat(eid + '/reactionT.mat')["reactionT"]
     wsls = sio.loadmat(eid + '/wsls.mat')["wsls"]
-    prevType = sio.loadmat(eid + '/prevType.mat')["prevType"]
-    prevChoice = sio.loadmat(eid + '/prevChoice.mat')["prevChoice"]
+    # flanker = sio.loadmat(eid + '/flanker.mat')["flanker"]
+    # reactionT = sio.loadmat(eid + '/reactionT.mat')["reactionT"]
+    # prevType = sio.loadmat(eid + '/prevType.mat')["prevType"]
+    # prevChoice = sio.loadmat(eid + '/prevChoice.mat')["prevChoice"]
 
     os.chdir(current_dir)
-    return animal, session_id, choice, stim, flanker, flanker_contrast,\
-          rewarded, trialType, reactionT, wsls, prevType, prevChoice
+    # return animal, session_id, choice, stim, flanker, flanker_contrast,\
+    #       rewarded, trialType, reactionT, wsls, prevType, prevChoice
+    return animal, session_id, choice, stim,\
+          rewarded, trialType, wsls
 
 
 def create_stim_vector(stim_left, stim_right):
@@ -143,54 +145,38 @@ def create_stim_vector(stim_left, stim_right):
 #     return new_choice_vector
 
 
-def create_design_mat(flanker, stim, flanker_contrast,\
-          rewarded, trialType, reactionT, wsls, prevType, prevChoice):
-# (stim, flanker_contrast, \
-#                                         trialType, wsls):
-
-    
+def create_design_mat(stim, rewarded, trialType, wsls):
     # Create unnormalized_inpt
     # with first column = stim_right - stim_left,
     # second column as past choice, third column as WSLS
     
     T = stim.shape[1]
-    design_mat = np.zeros((T, 9))
-    design_mat[:, 1] = stim 
-    design_mat[:, 0] = flanker 
-    design_mat[:, 2] = flanker_contrast
-    design_mat[:, 3] = rewarded
-    design_mat[:, 4] = trialType
-    design_mat[:, 5] = reactionT
-    design_mat[:, 6] = wsls
-    design_mat[:, 7] = prevType
-    design_mat[:, 8] = prevChoice 
-    # return design_mat
-    # T = stim.shape[1]
+    design_mat = np.zeros((T, 4))
+    design_mat[:, 0] = stim 
+    design_mat[:, 1] = rewarded
+    design_mat[:, 2] = trialType
+    design_mat[:, 3] = wsls
+
     # design_mat = np.zeros((T, 4))
-    # design_mat[:, 0] = stim - 1
-    # design_mat[:, 1] = flanker_contrast
-    # design_mat[:, 2] = trialType 
+    # design_mat[:, 0] = flanker_contrast
+    # design_mat[:, 1] = rewarded
+    # design_mat[:, 2] = trialType
     # design_mat[:, 3] = wsls
     return design_mat
 
 
 def get_all_unnormalized_data_this_session(eid):
     # Load raw data
-    animal, session_id, choice, stim, flanker, flanker_contrast,\
-          rewarded, trialType, reactionT, wsls, prevType, prevChoice \
+    animal, session_id, choice, stim,\
+          rewarded, trialType, wsls\
         = get_raw_data(eid)
     
     
  
  # 11/29: change to fewer params 
     # Create design mat = matrix of size T x 9
-    unnormalized_inpt = create_design_mat(flanker, stim, \
-                                        flanker_contrast, rewarded, \
-                                        trialType, reactionT, wsls, \
-                                        prevType, prevChoice)
-    # unnormalized_inpt = create_design_mat(stim, flanker_contrast, \
-    #                                     trialType, wsls)
-    # y = np.expand_dims(choice, axis=1)
+    unnormalized_inpt = create_design_mat(stim, rewarded, trialType, wsls)
+
     y = choice.reshape(-1,1) 
     session = [session_id for i in range(y.shape[0])]
     rewarded = rewarded.reshape(-1,1)
