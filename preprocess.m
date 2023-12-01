@@ -94,6 +94,7 @@ for session_id = 1:length(mdata)
     save([save_path '/choice.mat'],"choice")
 
     prevChoice = horzcat(choice(1),choice); prevChoice = prevChoice(1:end-1);
+    save([save_path '/predChoice.mat'],"prevChoice")
 
     wsls = create_wsls_covariate(prevChoice, rewarded);
     save([save_path '/wsls.mat'],"wsls")

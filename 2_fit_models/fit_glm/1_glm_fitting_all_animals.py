@@ -32,7 +32,7 @@ if __name__ == '__main__':
     
     # Fit GLM to data from single animal:
     for fold in range(num_folds):
-        labels_for_plot = [ 'stim','rewarded', 'trialType', 'wsls', 'bias']
+        labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'bias']
         #
         y = y.astype('int')
 
