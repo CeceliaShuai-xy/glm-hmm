@@ -94,33 +94,25 @@ for session_id = 1:length(mdata)
     save([save_path '/trialType.mat'],"trialType")
 
     prevChoice = horzcat(choice(1),choice); prevChoice = prevChoice(1:end-1);
+
     wsls = create_wsls_covariate(prevChoice, rewarded);
     save([save_path '/wsls.mat'],"wsls")
 
+    % not to save but to visualize inputs and y
+    X = horzcat(wsls', trialType', rewarded', flanker_contrast');
+    y = choice';
+    design_matrix = [X y];
 end
 
-function wsls =  create_wsls_covariate(prevChoice, rewarded)
-%{
-inputs:
-    rewarded: {-1, 1}, -1 corresponds to failure, 1 corresponds to success
-    prevChoice: {0,1} and 0 corresponds to vertical, 1 corresponds to
-    horizontal
-output:
-    wsls: {-1, 1}.  
-    1 corresponds to prevChoice = horz and success OR prevChoice = vert and
-    failure
-    -1 corresponds to prevChoice = vert and success OR prevChoice = horz and
-    failure
-%}
+%% performance visualization
 
-% remap choice vals
-remapped_choice = prevChoice * 2 - 1;
-assert(sum(unique(remapped_choice) == [-1,1])==2,'remapping error')
-pre_rewarded = horzcat(rewarded(1),rewarded); pre_rewarded = pre_rewarded(1:end-1);
-wsls = remapped_choice .* pre_rewarded;
-assert(length(unique(wsls)) == 2, "wsls should be in {-1, 1}")
-end
-
-
-
-
+figure(1)
+plot(stim(rewarded==1),'.', 'color','b', 'MarkerSize', 10)
+hold on
+plot(stim(rewarded==-1),'.', 'color','r', 'MarkerSize', 10)
+ylim([0 3])
+text(0.5*length(stim), 2.5, ['Accuracy = ' num2str(sum(rewarded==1)/length(stim))])
+xlabel('trials')
+yticks([1 2])
+yticklabels(["vertical"; "horizontal"])
+tickangle(90)
