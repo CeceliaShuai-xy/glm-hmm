@@ -1,11 +1,10 @@
 %% Author: Cecelia Shuai %%%%%%%%%%%%%%%%%%%
-%  Created date: 11/28/2023
+%  Created date: 12/07/2023
 %  Purpose: preprocess the extracted 
 %  parameters before feeding in GLM 
-%  Last edit time: 11/28/2023
-%  Last edit made: - change choice val from {1,2} to {0,1}(11/29)
-%                  - remove some redundant var (flanker,
-%                  reactT,prevType&Choice (11/30)
+%  Last edit time: 12/07/2023
+%  Last edit made: - change the plotting stype, also adapt code for
+%                    no-flanker situation
 %  TODOs: visualization of the performance
 % ===========================================
 % --------- DATA TO BE PROCESSED ------------
@@ -20,10 +19,10 @@
 % -------------- DATA WE NEED ---------------
 % choice = currrent trial choice
 % stim = {1, 2} = {vertical, horizontal}
-% flanker = {0, 1, 2}
-% flankerContrast (relative) = stim cont - flanker cont [-6,2]
+% flanker orientation = {0, 1, 2}
+% flankerContrast [0,8]
 % rewarded = {1, -1} = {rewarded/correct, unrewarded/incorrect}
-% trialType  = {0, 1, 2} =  {no flanker, congruent, incongruent}
+% trialType  = {0, -1, 1} =  {no flanker, congruent, incongruent}
 % reactionT = reaction time 
 % wsls_covariate = {-1, 1} = {stay/shift to vert, stay/shift to horz}
     % requires prev choice & prev reward
@@ -33,7 +32,7 @@
 clear
 clc
 % load data
-animal = 'M1';
+animal = 'M15';
 load(['./data/' animal '_data.mat'])
 target_contrast = 6; 
 data_path = ['./data/Subjects/' animal '/'];
@@ -53,40 +52,31 @@ for session_id = 1:length(mdata)
 
     session_data = mdata{session_id};
 
+    %[stim{1,2}, trialType {-1 incongruent,0 no flanker,1 congruent}, 
+    % previous Choice, wsls {-1, 1}, flanker contrast {0,8}]
+
     %idx of trials where there's no flanker
     id_no_flanker = find(session_data.dist_cont_arr==0); 
-    % idx of weak/stronger flanker contrast
-    temp_contr = session_data.dist_cont_arr - target_contrast;
-    temp_weak_id = find(temp_contr <= -3); % weaker flanker
-    idx_stronger_flanker = find(temp_contr >=0);  % stronger contrast
-    Acommon = intersect(id_no_flanker,temp_weak_id);
-    idx_weaker_flanker = setxor(temp_weak_id,Acommon);
     
-    % intermediate contrast trials are omitted
-    trials_to_keep = sort([temp_weak_id idx_stronger_flanker]);
-
-    % modify trialtype to be {-2, -1, 0, 1, 2}
+    % modify trialtype to be {-1, 0, 1}
     % cong_tr_arr = {0, 1} = {incongruent, congruent}
     trialType = session_data.cong_tr_arr;
-    trialType(trialType==0) = -1;trialType(trialType==1) = 1;
+    trialType(trialType==0) = -1;%trialType(trialType==1) = 1;
     trialType(id_no_flanker) = 0;
-%     trialType(idx_weaker_flanker) = trialType(idx_weaker_flanker)*1;
-    trialType(idx_weaker_flanker) = trialType(idx_weaker_flanker)*2;
-    trialType = trialType(trials_to_keep);
-
     save([save_path '/trialType.mat'],"trialType")
-
     
+    % get flanker contrast
+    flankerCont = session_data.dist_cont_arr;
+    save([save_path '/flankerCont.mat'],"flankerCont")
+
     % get stim history 
     stim = session_data.target_type_arr + 1;
-    stim = stim(trials_to_keep);
     save([save_path '/stim.mat'],"stim")
 
-    rewarded = session_data.corr_arr;
-    rewarded = rewarded(trials_to_keep);
+    rewarded = session_data.corr_arr; %{-2 missed, -1 incorrect,1 correct}
     save([save_path '/rewarded.mat'],"rewarded")
 
-    if rewarded %stim {1,2}, choice {0,1}
+    if rewarded == 1 %stim {1,2}, choice {0,1}
         choice = stim - 1;
     else
         choice = 2 - stim;
@@ -100,17 +90,19 @@ for session_id = 1:length(mdata)
     save([save_path '/wsls.mat'],"wsls")
 
     % not to save but to visualize inputs and y
-    X = horzcat(stim', trialType', rewarded', wsls');
+    X = horzcat(stim', trialType', prevChoice', wsls',flankerCont');
     y = choice';
     design_matrix = [X y];
+    DesignTable = array2table(design_matrix,'VariableNames',{'Stim','TrialType','PrevChoice','WSLS','FlankerContrast','Choice(y)'});
 end
 
 %% performance visualization
-
-figure
-plot(stim(rewarded==1),'.', 'color','b', 'MarkerSize', 10)
+close all
+f1 = figure(1);
+f1.Position  = [200 800 800 200];
+plot(find(rewarded==1),stim(rewarded==1),'.', 'color','b', 'MarkerSize', 10)
 hold on
-plot(stim(rewarded==-1),'.', 'color','r', 'MarkerSize', 10)
+plot(find(rewarded==-1),stim(rewarded==-1),'.', 'color','r', 'MarkerSize', 10)
 ylim([0.5 2.5])
 title([animal ' Accuracy = ' num2str(sum(rewarded==1)/length(stim))])
 xlabel('trials')
@@ -140,6 +132,3 @@ pre_rewarded = horzcat(rewarded(1),rewarded); pre_rewarded = pre_rewarded(1:end-
 wsls = remapped_choice .* pre_rewarded;
 assert(length(unique(wsls)) == 2, "wsls should be in {-1, 1}")
 end
-
-
-
