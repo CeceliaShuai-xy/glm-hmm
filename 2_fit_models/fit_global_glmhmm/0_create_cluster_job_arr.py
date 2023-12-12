@@ -1,9 +1,9 @@
 #  In order to facilitate parallelization of jobs, create a job array that
 #  can be used on e.g. a cluster
 import numpy as np
-
-K_vals = [2, 3, 4, 5]
-num_folds = 5
+# import pdb
+K_vals = [2, 3, 4, 5] #num of hidden states
+num_folds = 3
 N_initializations = 20
 
 if __name__ == '__main__':
@@ -12,5 +12,6 @@ if __name__ == '__main__':
         for i in range(num_folds):
             for j in range(N_initializations):
                 cluster_job_arr.append([K, i, j])
-    np.savez('../../data/ibl/data_for_cluster/cluster_job_arr.npz',
+    # pdb.set_trace()
+    np.savez('/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/cluster_job_arr.npz',
              cluster_job_arr)

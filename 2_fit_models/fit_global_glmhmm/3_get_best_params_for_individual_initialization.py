@@ -8,19 +8,19 @@ import matplotlib.pyplot as plt
 from post_processing_utils import load_glmhmm_data, load_cv_arr, \
     create_cv_frame_for_plotting, get_file_name_for_best_model_fold, \
     permute_transition_matrix, calculate_state_permutation
-
+import pdb
 
 if __name__ == '__main__':
 
-    data_dir = '../../data/ibl/data_for_cluster/'
-    results_dir = '../../results/ibl_global_fit/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit/'
     save_directory = data_dir + "best_global_params/"
 
     if not os.path.exists(save_directory):
         os.makedirs(save_directory)
 
-    labels_for_plot = ['stim', 'pc', 'wsls', 'bias']
-
+    labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'Flanker Contrast', 'bias']
+        
     cv_file = results_dir + "/cvbt_folds_model.npz"
     cvbt_folds_model = load_cv_arr(cv_file)
 
@@ -36,6 +36,7 @@ if __name__ == '__main__':
         hmm_params, lls = load_glmhmm_data(raw_file)
 
         # Calculate permutation
+        # pdb.set_trace()
         permutation = calculate_state_permutation(hmm_params)
         print(permutation)
 

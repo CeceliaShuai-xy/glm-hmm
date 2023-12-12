@@ -19,7 +19,7 @@ N_initializations = 10
 
 if __name__ == '__main__':
     data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
-    num_folds = 4
+    num_folds = 3
 
     animal_file = data_dir + 'all_animals_concat.npz'
     inpt, y, session = load_data(animal_file)
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     
     # Fit GLM to data from single animal:
     for fold in range(num_folds):
-        labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'bias']
+        labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'flankerContrast', 'bias']
         #
         y = y.astype('int')
 

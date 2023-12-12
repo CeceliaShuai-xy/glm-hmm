@@ -11,11 +11,11 @@ C = 2  # number of output types/categories
 N_initializations = 10
 
 if __name__ == '__main__':
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    num_folds = 5
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    num_folds = 3
     animal_list = load_animal_list(data_dir + 'animal_list.npz')
 
-    results_dir = '../../results/ibl_individual_fit/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
             # Load data
             inpt, y, session = load_data(animal_file)
-            labels_for_plot = ['stim', 'pc', 'wsls', 'bias']
+            labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'flankerContrast','bias']
             y = y.astype('int')
 
             figure_directory = this_results_dir + "GLM/fold_" + str(fold) + '/'

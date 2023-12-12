@@ -1,6 +1,5 @@
-# Fit lapse model to IBL data
+# Fit lapse model to Attention task data
 import os
-
 import autograd.numpy as np
 import matplotlib.pyplot as plt
 from LapseModel import lapse_model
@@ -11,11 +10,11 @@ np.random.seed(65)
 
 if __name__ == '__main__':
 
-    data_dir = '../../data/ibl/data_for_cluster/'
-    results_dir = '../../results/ibl_global_fit/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit/'
 
-    num_lapse_params = 1
-    num_folds = 5
+    num_lapse_params = 2
+    num_folds = 4
 
     # Fit GLM to all data
     animal_file = data_dir + 'all_animals_concat.npz'
@@ -24,7 +23,7 @@ if __name__ == '__main__':
 
     for fold in range(num_folds):
         inpt, y, session = load_data(animal_file)
-        labels_for_plot = ['flashes', 'P_C', 'WSLS', 'bias']
+        labels_for_plot = ['target', 'Trial Type', 'WSLS', 'Flanker Contrast', 'bias']
         y = y.astype('int')
 
         sessions_to_keep = session_fold_lookup_table[np.where(

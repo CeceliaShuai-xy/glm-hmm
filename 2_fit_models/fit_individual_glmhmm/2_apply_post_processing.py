@@ -17,12 +17,12 @@ if __name__ == '__main__':
     prior_sigma = 2
     transition_alpha = 2
 
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    results_dir = '../../results/ibl_individual_fit/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
 
     # Parameters
     C = 2  # number of output classes
-    num_folds = 5  # number of folds
+    num_folds = 3  # number of folds
     D = 1  # number of output dimensions
     K_max = 5  # number of latent states
     num_models = K_max + 2  # model for each latent + 2 lapse
@@ -46,17 +46,17 @@ if __name__ == '__main__':
         best_init_cvbt_dict = {}
         for fold in range(num_folds):
             print("fold = " + str(fold))
-            test_inpt, test_y, test_nonviolation_mask, \
+            test_inpt, test_y, \
             this_test_session, train_inpt, train_y, \
-            train_nonviolation_mask, this_train_session, M, n_test, \
+            this_train_session, M, n_test, \
             n_train = prepare_data_for_cv(
                 inpt, y, session, session_fold_lookup_table, fold)
             ll0 = calculate_baseline_test_ll(
-                train_y[train_nonviolation_mask == 1, :],
-                test_y[test_nonviolation_mask == 1, :], C)
+                train_y,
+                test_y, C)
             ll0_train = calculate_baseline_test_ll(
-                train_y[train_nonviolation_mask == 1, :],
-                train_y[train_nonviolation_mask == 1, :], C)
+                train_y,
+                train_y, C)
             for model in models:
                 print("model = " + str(model))
                 if model == "GLM":
@@ -67,12 +67,12 @@ if __name__ == '__main__':
                         fold) + '/variables_of_interest_iter_0.npz'
                     ll_glm = calculate_glm_test_loglikelihood(
                         glm_weights_file,
-                        test_y[test_nonviolation_mask == 1, :],
-                        test_inpt[test_nonviolation_mask == 1, :], M, C)
+                        test_y,
+                        test_inpt, M, C)
                     ll_glm_train = calculate_glm_test_loglikelihood(
                         glm_weights_file,
-                        train_y[train_nonviolation_mask == 1, :],
-                        train_inpt[train_nonviolation_mask == 1, :], M, C)
+                        train_y,
+                        train_inpt, M, C)
                     cvbt_folds_model[0, fold] = calculate_cv_bit_trial(
                         ll_glm, ll0, n_test)
                     cvbt_train_folds_model[0, fold] = calculate_cv_bit_trial(

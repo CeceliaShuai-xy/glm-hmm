@@ -5,7 +5,7 @@ import numpy as np
 prior_sigma = [2]
 transition_alpha = [2]
 K_vals = [2, 3, 4, 5]
-num_folds = 5
+num_folds = 3
 N_initializations = 2
 
 if __name__ == '__main__':
@@ -16,7 +16,6 @@ if __name__ == '__main__':
                 for sigma in prior_sigma:
                     for alpha in transition_alpha:
                         cluster_job_arr.append([sigma, alpha, K, i, j])
-    np.savez('../../data/ibl/data_for_cluster/data_by_animal/cluster_job_arr'
-             '.npz',
+    np.savez('/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/cluster_job_arr.npz',
              cluster_job_arr)
     print(len(cluster_job_arr))

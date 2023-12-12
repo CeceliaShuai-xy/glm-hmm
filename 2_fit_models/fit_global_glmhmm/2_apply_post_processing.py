@@ -7,10 +7,10 @@ from post_processing_utils import load_data, load_session_fold_lookup, \
     prepare_data_for_cv, calculate_baseline_test_ll, \
     calculate_glm_test_loglikelihood, calculate_cv_bit_trial, \
     return_glmhmm_nll, return_lapse_nll
-
+import pdb
 if __name__ == '__main__':
-    data_dir = '../../data/ibl/data_for_cluster/'
-    results_dir = '../../results/ibl_global_fit/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit'
 
     # Load data
     inpt, y, session = load_data(data_dir + 'all_animals_concat.npz')
@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     # Parameters
     C = 2  # number of output classes
-    num_folds = 5  # number of folds
+    num_folds = 3  # number of folds
     D = 1  # number of output dimensions
     K_max = 5  # maximum number of latent states
     num_models = K_max + 2  # model for each latent + 2 lapse models
@@ -33,16 +33,16 @@ if __name__ == '__main__':
     # Save best initialization for each model-fold combination
     best_init_cvbt_dict = {}
     for fold in range(num_folds):
-        test_inpt, test_y, test_nonviolation_mask, this_test_session, \
-        train_inpt, train_y, train_nonviolation_mask, this_train_session, M,\
+        test_inpt, test_y, this_test_session, \
+        train_inpt, train_y, this_train_session, M,\
         n_test, n_train = prepare_data_for_cv(
             inpt, y, session, session_fold_lookup_table, fold)
         ll0 = calculate_baseline_test_ll(
-            train_y[train_nonviolation_mask == 1, :],
-            test_y[test_nonviolation_mask == 1, :], C)
+            train_y,
+            test_y, C)
         ll0_train = calculate_baseline_test_ll(
-            train_y[train_nonviolation_mask == 1, :],
-            train_y[train_nonviolation_mask == 1, :], C)
+            train_y,
+            train_y, C)
         for model in models:
             print("model = " + str(model))
             if model == "GLM":
@@ -51,11 +51,11 @@ if __name__ == '__main__':
                 glm_weights_file = results_dir + '/GLM/fold_' + str(
                     fold) + '/variables_of_interest_iter_0.npz'
                 ll_glm = calculate_glm_test_loglikelihood(
-                    glm_weights_file, test_y[test_nonviolation_mask == 1, :],
-                    test_inpt[test_nonviolation_mask == 1, :], M, C)
+                    glm_weights_file, test_y,
+                    test_inpt, M, C)
                 ll_glm_train = calculate_glm_test_loglikelihood(
-                    glm_weights_file, train_y[train_nonviolation_mask == 1, :],
-                    train_inpt[train_nonviolation_mask == 1, :], M, C)
+                    glm_weights_file, train_y,
+                    train_inpt, M, C)
                 cvbt_folds_model[0, fold] = calculate_cv_bit_trial(
                     ll_glm, ll0, n_test)
                 cvbt_train_folds_model[0, fold] = calculate_cv_bit_trial(
@@ -77,6 +77,7 @@ if __name__ == '__main__':
                 for K in range(2, K_max + 1):
                     print("K = " + str(K))
                     model_idx = 3 + (K - 2)
+                    # pdb.set_trace()
                     cvbt_folds_model[model_idx, fold], \
                     cvbt_train_folds_model[
                         model_idx, fold], _, _, init_ordering_by_train = \

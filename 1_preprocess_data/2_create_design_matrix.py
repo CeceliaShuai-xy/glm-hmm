@@ -5,19 +5,16 @@ Purpose: create design matrix for GLM-HMM
 Last edit time: 11/29/2023
 Last edit made: 
 '''
-## DATA WE WANT
-# -------------- DATA WE NEED ---------------
-#  y = currrent trial choice -> {1,2} => NOW CHANGE TO {0,1}
-# choice = currrent trial choice => NOW CHANGE TO {0,1}
-# stim = {1, 2} = {vertical, horizontal} => NOW CHANGE TO {0,1}
-# flanker = {1, 2} => NOW CHANGE TO {0,1}
-# flankerContrast (relative) = stim cont - flanker cont 
-# rewarded = {1, -1} = {rewarded/correct, unrewarded/incorrect}
-# trialType  = {0, 1, 2} =  {no flanker, congruent, incongruent}
-# reactionT = reaction time 
-# wsls_covariate = {-1, 1} = {stay/shift to vert, stay/shift to horz}
-    # requires prev choice & prev reward
-# prevType = {0, 1, 2} = {no flanker, congruent, incongruent}
+
+'''
+INPUT outlook
+choice (y) = {0, 1} = {vert, horz}
+stim = {0,1} = {vert, horz}
+trialType {-1 incongruent,0 no flanker,1 congruent}, 
+previous Choice, 
+wsls {-1, 1}, {choose vert next, choose horz next}
+flanker contrast {0,8}
+'''
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -82,7 +79,7 @@ if __name__ == '__main__':
             animal_unnormalized_inpt, animal_y,
             animal_session)
         animal_session_fold_lookup = create_train_test_sessions(animal_session,
-                                                                4)
+                                                                3)
         np.savez(
             save_path_individual + animal +
             "_session_fold_lookup" +

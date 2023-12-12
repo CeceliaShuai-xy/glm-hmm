@@ -3,7 +3,7 @@ import sys
 import ssm
 import autograd.numpy as np
 import autograd.numpy.random as npr
-
+import pdb
 
 def load_data(animal_file):
     container = np.load(animal_file, allow_pickle=True)
@@ -36,7 +36,7 @@ def load_global_params(global_params_file):
     return global_params
 
 
-def partition_data_by_session(inpt, y, mask, session):
+def partition_data_by_session(inpt, y, session):
     '''
     Partition inpt, y, mask by session
     :param inpt: arr of size TxM
@@ -53,15 +53,15 @@ def partition_data_by_session(inpt, y, mask, session):
     indexes = np.unique(session, return_index=True)[1]
     unique_sessions = [session[index] for index in sorted(indexes)]
     counter = 0
-    masks = []
     for sess in unique_sessions:
         idx = np.where(session == sess)[0]
         counter += len(idx)
         inputs.append(inpt[idx, :])
         datas.append(y[idx, :])
-        masks.append(mask[idx, :])
     assert counter == inpt.shape[0], "not all trials assigned to session!"
-    return inputs, datas, masks
+    #pdb.set_trace()
+    # inputs: inputs by sessions, datas: y
+    return inputs, datas
 
 
 def load_session_fold_lookup(file_path):
@@ -78,7 +78,7 @@ def load_animal_list(file):
     return animal_list
 
 
-def launch_glm_hmm_job(inpt, y, session, mask, session_fold_lookup_table, K, D,
+def launch_glm_hmm_job(inpt, y, session, session_fold_lookup_table, K, D,
                        C, N_em_iters, transition_alpha, prior_sigma, fold,
                        iter, global_fit, init_param_file, save_directory):
     print("Starting inference with K = " + str(K) + "; Fold = " + str(fold) +
@@ -87,15 +87,14 @@ def launch_glm_hmm_job(inpt, y, session, mask, session_fold_lookup_table, K, D,
     sessions_to_keep = session_fold_lookup_table[np.where(
         session_fold_lookup_table[:, 1] != fold), 0]
     idx_this_fold = [str(sess) in sessions_to_keep for sess in session]
-    this_inpt, this_y, this_session, this_mask = inpt[idx_this_fold, :], \
+    this_inpt, this_y, this_session = inpt[idx_this_fold, :], \
                                                  y[idx_this_fold, :], \
-                                                 session[idx_this_fold], \
-                                                 mask[idx_this_fold]
+                                                 session[idx_this_fold]
     # Only do this so that errors are avoided - these y values will not
     # actually be used for anything (due to violation mask)
     this_y[np.where(this_y == -1), :] = 1
-    inputs, datas, masks = partition_data_by_session(
-        this_inpt, this_y, this_mask, this_session)
+    inputs, datas = partition_data_by_session(
+        this_inpt, this_y, this_session)
     # Read in GLM fit if global_fit = True:
     if global_fit == True:
         _, params_for_initialization = load_glm_vectors(init_param_file)
@@ -105,7 +104,6 @@ def launch_glm_hmm_job(inpt, y, session, mask, session_fold_lookup_table, K, D,
     npr.seed(iter)
     fit_glm_hmm(datas,
                 inputs,
-                masks,
                 K,
                 D,
                 M,
@@ -119,14 +117,13 @@ def launch_glm_hmm_job(inpt, y, session, mask, session_fold_lookup_table, K, D,
                            str(iter) + '.npz')
 
 
-def fit_glm_hmm(datas, inputs, masks, K, D, M, C, N_em_iters,
+def fit_glm_hmm(datas, inputs, K, D, M, C, N_em_iters,
                 transition_alpha, prior_sigma, global_fit,
                 params_for_initialization, save_title):
     '''
     Instantiate and fit GLM-HMM model
     :param datas:
     :param inputs:
-    :param masks:
     :param K:
     :param D:
     :param M:
@@ -173,28 +170,28 @@ def fit_glm_hmm(datas, inputs, masks, K, D, M, C, N_em_iters,
     # Fit this HMM and calculate marginal likelihood
     lls = this_hmm.fit(datas,
                        inputs=inputs,
-                       masks=masks,
                        method="em",
                        num_iters=N_em_iters,
                        initialize=False,
                        tolerance=10 ** -4)
     # Save raw parameters of HMM, as well as loglikelihood during training
+    # pdb.set_trace()
     np.savez(save_title, this_hmm.params, lls)
     return None
 
 
-def create_violation_mask(violation_idx, T):
-    """
-    Return indices of nonviolations and also a Boolean mask for inclusion (1
-    = nonviolation; 0 = violation)
-    :param test_idx:
-    :param T:
-    :return:
-    """
-    mask = np.array([i not in violation_idx for i in range(T)])
-    nonviolation_idx = np.arange(T)[mask]
-    mask = mask + 0
-    assert len(nonviolation_idx) + len(
-        violation_idx
-    ) == T, "violation and non-violation idx do not include all dta!"
-    return nonviolation_idx, np.expand_dims(mask, axis=1)
+# def create_violation_mask(violation_idx, T):
+#     """
+#     Return indices of nonviolations and also a Boolean mask for inclusion (1
+#     = nonviolation; 0 = violation)
+#     :param test_idx:
+#     :param T:
+#     :return:
+#     """
+#     mask = np.array([i not in violation_idx for i in range(T)])
+#     nonviolation_idx = np.arange(T)[mask]
+#     mask = mask + 0
+#     assert len(nonviolation_idx) + len(
+#         violation_idx
+#     ) == T, "violation and non-violation idx do not include all dta!"
+#     return nonviolation_idx, np.expand_dims(mask, axis=1)

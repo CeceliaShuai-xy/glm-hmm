@@ -13,10 +13,10 @@ if __name__ == '__main__':
 
     num_lapse_params = 1
 
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    results_dir = '../../results/ibl_individual_fit/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
 
-    num_folds = 5
+    num_folds = 3
     animal_list = load_animal_list(data_dir + 'animal_list.npz')
 
     # Fit GLM to all data
@@ -32,7 +32,7 @@ if __name__ == '__main__':
             inpt, y, session = load_data(animal_file)
             y = y.astype('int')
 
-            labels_for_plot = ['stim', 'pc', 'wsls', 'bias']
+            labels_for_plot = ['target', 'Trial Type', 'WSLS', 'Flanker Contrast', 'bias']
 
             sessions_to_keep = session_fold_lookup_table[np.where(
                 session_fold_lookup_table[:, 1] != fold), 0]

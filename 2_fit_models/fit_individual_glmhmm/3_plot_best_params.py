@@ -6,20 +6,21 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import pdb
 
 sys.path.insert(0, '../fit_global_glmhmm/')
 from glm_hmm_utils import load_animal_list
 from post_processing_utils import load_data, load_glmhmm_data, load_cv_arr, \
     create_cv_frame_for_plotting, get_file_name_for_best_model_fold, \
-    partition_data_by_session, create_violation_mask, get_marginal_posterior
+    partition_data_by_session, get_marginal_posterior
 
 if __name__ == '__main__':
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
     prior_sigma = 2
     transition_alpha = 2
-    results_dir = '../../results/ibl_individual_fit/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
 
-    labels_for_plot = ['stim', 'pc', 'wsls', 'bias']
+    labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'Flanker Contrast', 'bias']
 
     animal_list = load_animal_list(data_dir + 'animal_list.npz')
     for animal in animal_list:
@@ -29,7 +30,7 @@ if __name__ == '__main__':
         cv_file = results_this_animal_dir + "/cvbt_folds_model.npz"
         cvbt_folds_model = load_cv_arr(cv_file)
 
-        for K in range(2, 6):
+        for K in range(2, 4):
             save_dir = results_dir + 'params_all_animals/K_' + str(K) + '/'
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir)
@@ -77,7 +78,7 @@ if __name__ == '__main__':
             plt.yticks(fontsize=30)
             plt.legend(fontsize=30)
             plt.axhline(y=0, color="k", alpha=0.5, ls="--")
-            plt.ylim((-3, 14))
+            # plt.ylim((-15, 2))
             plt.ylabel("Weight", fontsize=30)
             plt.xlabel("Covariate", fontsize=30, labelpad=20)
             plt.title("GLM Weights: Choice = R", fontsize=40)
@@ -115,6 +116,7 @@ if __name__ == '__main__':
             data_for_plotting_df, loc_best, best_val, \
             glm_lapse_model = create_cv_frame_for_plotting(
                 cv_file)
+            # pdb.set_trace()
             cv_file_train = results_this_animal_dir + "/cvbt_train_folds_model.npz"
             train_data_for_plotting_df, train_loc_best, \
             train_best_val, train_glm_lapse_model = \
@@ -160,7 +162,7 @@ if __name__ == '__main__':
             plt.legend(loc='upper right', fontsize=30)
             plt.tick_params(axis='y')
             plt.yticks([0.2, 0.3, 0.4, 0.5], fontsize=30)
-            plt.ylim((0.2, 0.55))
+            # plt.ylim((0.2, 0.55))
             plt.title("Model Comparison", fontsize=40)
 
             plt.subplot(1, 4, 4)
@@ -168,14 +170,11 @@ if __name__ == '__main__':
             inpt, y, session = load_data(data_dir + animal + '_processed.npz')
             inpt = np.hstack((inpt, np.ones((len(inpt), 1))))
             # Identify violations for exclusion:
-            violation_idx = np.where(y == -1)[0]
-            nonviolation_idx, mask = create_violation_mask(
-                violation_idx, inpt.shape[0])
             y[np.where(y == -1), :] = 1  # due to mask, doesn't matter what
             # we set y to at violation idx
-            inputs, datas, masks = partition_data_by_session(
-                inpt, y, mask, session)
-            posterior_probs = get_marginal_posterior(inputs, datas, masks,
+            inputs, datas = partition_data_by_session(
+                inpt, y, session)
+            posterior_probs = get_marginal_posterior(inputs, datas,
                                                      hmm_params, K, range(K))
             states_max_posterior = np.argmax(posterior_probs, axis=1)
             plt.hist(states_max_posterior)
