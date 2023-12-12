@@ -17,8 +17,8 @@
 % nodist_tr_arr = {1, 0} = {no distractor, distractor}
 % rxt_arr: reaction times
 % -------------- DATA WE NEED ---------------
-% choice = currrent trial choice
-% stim = {1, 2} = {vertical, horizontal}
+% choice = currrent trial choice = {0,1} 
+% stim = {0, 1} = {vertical, horizontal}
 % flanker orientation = {0, 1, 2}
 % flankerContrast [0,8]
 % rewarded = {1, -1} = {rewarded/correct, unrewarded/incorrect}
@@ -32,7 +32,7 @@
 clear
 clc
 % load data
-animal = 'M15';
+animal = 'M1';
 load(['./data/' animal '_data.mat'])
 target_contrast = 6; 
 data_path = ['./data/Subjects/' animal '/'];
@@ -52,7 +52,7 @@ for session_id = 1:length(mdata)
 
     session_data = mdata{session_id};
 
-    %[stim{1,2}, trialType {-1 incongruent,0 no flanker,1 congruent}, 
+    %[stim{0,1}, trialType {-1 incongruent,0 no flanker,1 congruent}, 
     % previous Choice, wsls {-1, 1}, flanker contrast {0,8}]
 
     %idx of trials where there's no flanker
@@ -70,16 +70,16 @@ for session_id = 1:length(mdata)
     save([save_path '/flankerCont.mat'],"flankerCont")
 
     % get stim history 
-    stim = session_data.target_type_arr + 1;
+    stim = session_data.target_type_arr;
     save([save_path '/stim.mat'],"stim")
 
     rewarded = session_data.corr_arr; %{-2 missed, -1 incorrect,1 correct}
     save([save_path '/rewarded.mat'],"rewarded")
 
-    if rewarded == 1 %stim {1,2}, choice {0,1}
-        choice = stim - 1;
+    if rewarded == 1 %stim {0,1}, choice {0,1}
+        choice = stim;
     else
-        choice = 2 - stim;
+        choice = 1 - stim;
     end
     save([save_path '/choice.mat'],"choice")
 
@@ -103,10 +103,10 @@ f1.Position  = [200 800 800 200];
 plot(find(rewarded==1),stim(rewarded==1),'.', 'color','b', 'MarkerSize', 10)
 hold on
 plot(find(rewarded==-1),stim(rewarded==-1),'.', 'color','r', 'MarkerSize', 10)
-ylim([0.5 2.5])
+ylim([-0.5 1.5])
 title([animal ' Accuracy = ' num2str(sum(rewarded==1)/length(stim))])
 xlabel('trials')
-yticks([1 2])
+yticks([0 1])
 yticklabels(["vertical"; "horizontal"])
 ytickangle(90)
 
@@ -120,9 +120,9 @@ inputs:
 output:
     wsls: {-1, 1}.  
     1 corresponds to prevChoice = horz and success OR prevChoice = vert and
-    failure
+    failure (choose HORZ next trial)
     -1 corresponds to prevChoice = vert and success OR prevChoice = horz and
-    failure
+    failure (choose VERTICAL next trial)
 %}
 
 % remap choice vals
