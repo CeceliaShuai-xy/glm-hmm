@@ -23,6 +23,9 @@ if __name__ == '__main__':
     if not os.path.exists(data_path + "partially_processed/"):
         os.makedirs(data_path + "partially_processed/")
 
+    if not os.path.exists(data_path + "Subjects/"):
+        os.makedirs(data_path + "Subjects/")
+
     animal_list = os.listdir(data_path + "Subjects/")
     animal_eid_dict = defaultdict(list)
     for animal in animal_list:

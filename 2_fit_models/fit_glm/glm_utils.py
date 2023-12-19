@@ -81,7 +81,7 @@ def plot_input_vectors(Ws,
                            ['Stimulus', 'Past Choice', 'Bias'],
                            rotation='90',
                            fontsize=12)
-            plt.ylim((-20, 20))
+            plt.ylim((-10, 10))
 
     fig.text(0.04,
              0.5,

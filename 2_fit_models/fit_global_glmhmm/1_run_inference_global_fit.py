@@ -22,8 +22,8 @@ if __name__ == '__main__':
     num_folds = 3
     global_fit = True
     # perform mle => set transition_alpha to 1
-    transition_alpha = 1
-    prior_sigma = 100
+    transition_alpha = 2#1
+    prior_sigma = 2#100
     
     # pdb.set_trace()
     # Load external files:

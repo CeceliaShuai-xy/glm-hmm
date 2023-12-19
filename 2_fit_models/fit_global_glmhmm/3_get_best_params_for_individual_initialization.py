@@ -5,9 +5,11 @@ import os
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from post_processing_utils import load_glmhmm_data, load_cv_arr, \
+from post_processing_utils import load_data, load_glmhmm_data, load_cv_arr, \
     create_cv_frame_for_plotting, get_file_name_for_best_model_fold, \
-    permute_transition_matrix, calculate_state_permutation
+    permute_transition_matrix, calculate_state_permutation, partition_data_by_session,\
+    get_marginal_posterior
+
 import pdb
 
 if __name__ == '__main__':
@@ -19,12 +21,14 @@ if __name__ == '__main__':
     if not os.path.exists(save_directory):
         os.makedirs(save_directory)
 
-    labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'Flanker Contrast', 'bias']
-        
+    labels_for_plot = [ 'Stim', 'Type', 'flanker',\
+                       'Contrast', 'PS',\
+                       'PT','PC', \
+                       'WSLS', 'PR', 'Bias']
     cv_file = results_dir + "/cvbt_folds_model.npz"
     cvbt_folds_model = load_cv_arr(cv_file)
 
-    for K in range(2, 6):
+    for K in range(2, 8):
         print("K = " + str(K))
         with open(results_dir + "/best_init_cvbt_dict.json", 'r') as f:
             best_init_cvbt_dict = json.load(f)
@@ -54,8 +58,8 @@ if __name__ == '__main__':
             params_for_individual_initialization)
 
         # Plot these too:
-        cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306"]
-        fig = plt.figure(figsize=(4 * 8, 10),
+        cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306","#7209b7", "#f72585"]
+        fig = plt.figure(figsize=(4 * 4, 10),
                          dpi=80,
                          facecolor='w',
                          edgecolor='k')
@@ -65,7 +69,7 @@ if __name__ == '__main__':
                             top=0.7,
                             wspace=0.8,
                             hspace=0.5)
-        plt.subplot(1, 3, 1)
+        plt.subplot(1, 2, 1)
         M = weight_vectors.shape[2] - 1
         for k in range(K):
             plt.plot(range(M + 1),
@@ -76,17 +80,17 @@ if __name__ == '__main__':
                      lw=4)
         plt.xticks(list(range(0, len(labels_for_plot))),
                    labels_for_plot,
-                   rotation='20',
+                   rotation='90',
                    fontsize=24)
         plt.yticks(fontsize=30)
-        plt.legend(fontsize=30)
+        plt.legend(fontsize=15)
         plt.axhline(y=0, color="k", alpha=0.5, ls="--")
         # plt.ylim((-3, 14))
         plt.ylabel("Weight", fontsize=30)
         plt.xlabel("Covariate", fontsize=30, labelpad=20)
         plt.title("GLM Weights: Choice = R", fontsize=40)
 
-        plt.subplot(1, 3, 2)
+        plt.subplot(1, 2, 2)
         transition_matrix = np.exp(log_transition_matrix)
         plt.imshow(transition_matrix, vmin=0, vmax=1)
         for i in range(transition_matrix.shape[0]):
@@ -98,7 +102,7 @@ if __name__ == '__main__':
                                 ha="center",
                                 va="center",
                                 color="k",
-                                fontsize=30)
+                                fontsize=15)
         plt.ylabel("Previous State", fontsize=30)
         plt.xlabel("Next State", fontsize=30)
         plt.xlim(-0.5, K - 0.5)
@@ -110,12 +114,19 @@ if __name__ == '__main__':
                                  '8', '9', '10')[:K],
                    fontsize=30)
         plt.title("Retrieved", fontsize=40)
+        fig.savefig(results_dir + 'best_params_cross_validation_K_' +
+                    str(K) + '_Weights.png')
 
-        plt.subplot(1, 3, 3)
+        fig = plt.figure(figsize=(4 * 4, 10),
+                         dpi=80,
+                         facecolor='w',
+                         edgecolor='k')
+        plt.subplot(1, 2, 1)
         cols = [
             "#7e1e9c", "#0343df", "#15b01a", "#bf77f6", "#95d0fc",
             "#96f97b"
         ]
+        # pdb.set_trace()
         cv_file = results_dir + "/cvbt_folds_model.npz"
         data_for_plotting_df, loc_best, best_val, glm_lapse_model = \
             create_cv_frame_for_plotting(
@@ -152,8 +163,8 @@ if __name__ == '__main__':
             lw=4)
         plt.xlabel("Model", fontsize=30)
         plt.ylabel("Normalized LL", fontsize=30)
-        plt.xticks([0, 1, 2, 3, 4],
-                   ['1 State', '2 State', '3 State', '4 State', '5 State'],
+        plt.xticks([0, 1, 2, 3, 4, 5, 6],
+                   ['1 State', '2 State', '3 State', '4 State', '5 State', '6 State', '7 State'],
                    rotation=45,
                    fontsize=24)
         plt.yticks(fontsize=15)
@@ -167,7 +178,27 @@ if __name__ == '__main__':
         plt.yticks([0.2, 0.3, 0.4, 0.5], fontsize=30)
         plt.ylim((0.2, 0.55))
         plt.title("Model Comparison", fontsize=40)
+        
+        # pdb.set_trace()
+        plt.subplot(1, 2, 2)
+        # get state occupancies:
+        inpt, y, session = load_data(data_dir + 'all_animals_concat.npz')
+        inpt = np.hstack((inpt, np.ones((len(inpt), 1))))
+        # Identify violations for exclusion:
+        y[np.where(y == -1), :] = 1  # due to mask, doesn't matter what
+        # we set y to at violation idx
+        inputs, datas = partition_data_by_session(
+            inpt, y, session)
+        posterior_probs = get_marginal_posterior(inputs, datas,
+                                                    hmm_params, K, range(K))
+        states_max_posterior = np.argmax(posterior_probs, axis=1)
+        plt.hist(states_max_posterior)
+        plt.ylabel("# trials", fontsize=30)
+        plt.xlabel("State", fontsize=30)
+        plt.xticks(range(K), range(1, K + 1), fontsize=30)
+        plt.yticks(fontsize=30)
+        plt.title("State occuupancies", fontsize=40)
         fig.tight_layout()
 
         fig.savefig(results_dir + 'best_params_cross_validation_K_' +
-                    str(K) + '.png')
+                    str(K) + '_Occupancy.png')

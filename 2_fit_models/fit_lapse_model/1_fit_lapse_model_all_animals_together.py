@@ -14,7 +14,7 @@ if __name__ == '__main__':
     results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit/'
 
     num_lapse_params = 2
-    num_folds = 4
+    num_folds = 3
 
     # Fit GLM to all data
     animal_file = data_dir + 'all_animals_concat.npz'
@@ -23,7 +23,10 @@ if __name__ == '__main__':
 
     for fold in range(num_folds):
         inpt, y, session = load_data(animal_file)
-        labels_for_plot = ['target', 'Trial Type', 'WSLS', 'Flanker Contrast', 'bias']
+        labels_for_plot = [ 'stim', 'Type', 'flanker',\
+                       'contrast', 'pStim',\
+                       'pType','pChoice', \
+                       'wsls', 'pReward', 'bias']
         y = y.astype('int')
 
         sessions_to_keep = session_fold_lookup_table[np.where(

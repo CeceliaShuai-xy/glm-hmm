@@ -2,22 +2,33 @@
 Author Cecelia Shuai
 Created date: 11/29/2023
 Purpose: create design matrix for GLM-HMM
-Last edit time: 11/29/2023
-Last edit made: 
+Last edit time: 12/17/2023
+Last edit made: 9 covariates and 2 dependent variables
 '''
 
 '''
 INPUT outlook
-choice (y) = {0, 1} = {vert, horz}
-stim = {0,1} = {vert, horz}
-trialType {-1 incongruent,0 no flanker,1 congruent}, 
-previous Choice, 
-wsls {-1, 1}, {choose vert next, choose horz next}
-flanker contrast {0,8}
+% Dependent variables
+% choice = currrent trial choice = {0,1} 
+% reaction time
+%         ----------------------------
+% Independent variables
+% stim = {0, 1} = {vertical, horizontal}
+% trialType  = {0, -1, 1} =  {no flanker, incongruent, congruent}
+% prevChoice  = {0,1}
+% wsls_covariate = {-1, 1} = {stay/shift to vert, stay/shift to horz}
+%                   > requires prev choice & prev reward
+% flankerContrast [0,8]
+% flanker orientation = {0, 1, 2}
+% prevType = {0, -1, 1} 
+% (?)rewarded = {1, -1} = {rewarded/correct, unrewarded/incorrect}
+% prevReward = {-1, 1}
+% prevStim = {0, 1} 
 '''
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+from sklearn import preprocessing
 import numpy.random as npr
 import os
 import json
@@ -51,6 +62,7 @@ if __name__ == '__main__':
 
 # stack all sessions together for each individual animal
     final_animal_eid_dict = defaultdict(list)
+    # pdb.set_trace()
     for z, animal in enumerate(animal_list):
         sess_counter = 0
         for eid in animal_eid_dict[animal]:
@@ -124,7 +136,22 @@ if __name__ == '__main__':
     # pdb.set_trace() # break here to check master_inpt now
 
     scaler = StandardScaler()
-    normalized_inpt = scaler.fit_transform(normalized_inpt)
+    
+    temp = scaler.fit_transform(normalized_inpt)
+    # normalized_inpt = temp
+    '''
+    {'Stim{1,0}','TrialType {0,-1,1}','Flanker{1,0}', 
+    'FlankerContrast' [0,8],'PrevStim {0,1}', ...
+    'PrevType {0,-1,1}', 'PrevChoice {0,1}',
+    'WSLS' {-1,1}, 'PrevReward'{-1,1}, 'Choice(y1) {0,1}','ReactionT(y2)'}
+    '''
+    normalized_inpt[:, 1] = preprocessing.scale(normalized_inpt[:, 1])
+    normalized_inpt[:, 3] = preprocessing.scale(normalized_inpt[:, 3])
+    normalized_inpt[:, 5] = preprocessing.scale(normalized_inpt[:, 5])
+    normalized_inpt[:, 7] = preprocessing.scale(normalized_inpt[:, 7])
+    normalized_inpt[:, 8] = preprocessing.scale(normalized_inpt[:, 8])
+    # pdb.set_trace()
+
     np.savez(save_path_cluster + 'all_animals_concat' + '.npz',
              normalized_inpt,
              master_y, master_session)

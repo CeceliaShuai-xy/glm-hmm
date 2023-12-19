@@ -20,7 +20,10 @@ if __name__ == '__main__':
     transition_alpha = 2
     results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
 
-    labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'Flanker Contrast', 'bias']
+    labels_for_plot = [ 'stim', 'Type', 'flanker',\
+                       'contrast', 'pStim',\
+                       'pType','pChoice', \
+                       'wsls', 'pReward', 'bias']
 
     animal_list = load_animal_list(data_dir + 'animal_list.npz')
     for animal in animal_list:
@@ -30,7 +33,7 @@ if __name__ == '__main__':
         cv_file = results_this_animal_dir + "/cvbt_folds_model.npz"
         cvbt_folds_model = load_cv_arr(cv_file)
 
-        for K in range(2, 4):
+        for K in range(2, 5):
             save_dir = results_dir + 'params_all_animals/K_' + str(K) + '/'
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir)
@@ -73,7 +76,7 @@ if __name__ == '__main__':
                          lw=4)
             plt.xticks(list(range(0, len(labels_for_plot))),
                        labels_for_plot,
-                       rotation='20',
+                       rotation='45',
                        fontsize=24)
             plt.yticks(fontsize=30)
             plt.legend(fontsize=30)
@@ -146,11 +149,13 @@ if __name__ == '__main__':
                          label="train",
                          alpha=1,
                          lw=4)
+            # pdb.set_trace()
             plt.scatter(loc_best, best_val, s=400, color='black', marker="*")
             plt.xlabel("Model", fontsize=30)
             plt.ylabel("Normalized LL", fontsize=30)
-            plt.xticks([0, 1, 2, 3, 4],
-                       ['1 State', '2 State', '3 State', '4 State', '5 State'],
+            plt.xticks([0, 1, 2, 3],
+                    #    ['1 State', '2 State', '3 State', '4 State', '5 State'],
+                       ['1 State', '2 State', '3 State', '4 State'],
                        rotation=45,
                        fontsize=24)
             plt.yticks(fontsize=15)
@@ -161,8 +166,8 @@ if __name__ == '__main__':
                         lw=4)
             plt.legend(loc='upper right', fontsize=30)
             plt.tick_params(axis='y')
-            plt.yticks([0.2, 0.3, 0.4, 0.5], fontsize=30)
-            # plt.ylim((0.2, 0.55))
+            plt.yticks([0.1, 0.2, 0.3, 0.4], fontsize=30)
+            plt.ylim((0.1, 0.45))   
             plt.title("Model Comparison", fontsize=40)
 
             plt.subplot(1, 4, 4)

@@ -273,6 +273,7 @@ def calculate_glm_hmm_test_loglikelihood(glm_hmm_dir, test_datas, test_inputs,\
                            observation_kwargs=dict(C=C),
                            transitions="standard")
         this_hmm.params = this_hmm_params
+        # pdb.set_trace()
         test_ll = this_hmm.log_likelihood(test_datas,
                                           inputs=test_inputs)
         test_ll_vals_across_iters.append(test_ll)
@@ -364,7 +365,8 @@ def create_cv_frame_for_plotting(cv_file):
     # pdb.set_trace()
     cvbt_folds_model = load_cv_arr(cv_file)
     glm_lapse_model = cvbt_folds_model[:3, ]
-    idx = np.array([0, 3, 4, 5, 6]) # what does idx mean here???
+    idx = np.array([0, 3, 4, 5,6,7,8]) #np.array([0, 3, 4, 5, 6]) # what does idx mean here???
+    # starts from 3, -> model_idx (__ state GLM)=  3 + K-2 -> {K=2,3,4}-> {model_idx = 3,4,5}
     cvbt_folds_model = cvbt_folds_model[idx, :]
     # Identify best cvbt:
     mean_cvbt = np.mean(cvbt_folds_model, axis=1)

@@ -30,7 +30,10 @@ if __name__ == '__main__':
 
             # Load data
             inpt, y, session = load_data(animal_file)
-            labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'flankerContrast','bias']
+            labels_for_plot = [ 'stim', 'trialType', 'flanker', \
+                           'flankerContrast', 'prevStim', \
+                            'prevType', 'prevChoice','wsls', \
+                            'prevReward', 'bias']
             y = y.astype('int')
 
             figure_directory = this_results_dir + "GLM/fold_" + str(fold) + '/'

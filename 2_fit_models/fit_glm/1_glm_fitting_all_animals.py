@@ -32,7 +32,10 @@ if __name__ == '__main__':
     
     # Fit GLM to data from single animal:
     for fold in range(num_folds):
-        labels_for_plot = [ 'stim', 'trialType', 'prevChoice','wsls', 'flankerContrast', 'bias']
+        labels_for_plot = [ 'stim', 'trialType', 'flanker', \
+                           'flankerContrast', 'prevStim', \
+                            'prevType', 'prevChoice','wsls', \
+                            'prevReward', 'bias']
         #
         y = y.astype('int')
 
@@ -66,9 +69,9 @@ if __name__ == '__main__':
                                             y[idx_test, :], \
                                             session[idx_test]
 
-        assert len(
-            np.unique(this_y)
-        ) == 2, "choice vector should only include 2 possible values"
+        # assert len(
+        #     np.unique(this_y)
+        # ) == 2, "choice vector should only include 2 possible values"
         train_size = this_inpt.shape[0]
 
         M = this_inpt.shape[1]

@@ -1,6 +1,7 @@
 # Fit lapse model to IBL data
 import autograd.numpy as np
 import autograd.numpy.random as npr
+import pdb
 
 def load_data(animal_file):
     container = np.load(animal_file, allow_pickle=True)
@@ -50,7 +51,7 @@ def get_parstart(i, M):
 def calculate_std(hessian):
     # Calculate inverse of Hessian (this is what we will actually use to
     # calculate variance)
-    inv_hessian = np.linalg.inv(hessian)
+    inv_hessian = np.linalg.pinv(hessian)
     # Take diagonal elements and calculate square root
     std_dev = np.sqrt(np.diag(inv_hessian))
     return std_dev

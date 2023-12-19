@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 from LapseModel import lapse_model
 from lapse_utils import load_session_fold_lookup, load_data, \
     load_animal_list, get_parmin, get_parmax, get_parstart, calculate_std
-
+import pdb
 np.random.seed(65)
 
 if __name__ == '__main__':
 
-    num_lapse_params = 1
+    num_lapse_params = 2
 
     data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
     results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
@@ -32,7 +32,10 @@ if __name__ == '__main__':
             inpt, y, session = load_data(animal_file)
             y = y.astype('int')
 
-            labels_for_plot = ['target', 'Trial Type', 'WSLS', 'Flanker Contrast', 'bias']
+            labels_for_plot = [ 'stim', 'Type', 'flanker',\
+                       'contrast', 'pStim',\
+                       'pType','pChoice', \
+                       'wsls', 'pReward', 'bias']
 
             sessions_to_keep = session_fold_lookup_table[np.where(
                 session_fold_lookup_table[:, 1] != fold), 0]
@@ -120,7 +123,11 @@ if __name__ == '__main__':
                 # Get hessian
                 this_hess = hessians[init][0]
                 # Get sd
-                this_sd = calculate_std(this_hess)
+                try:
+                    this_sd = calculate_std(this_hess)
+                except:
+                    pdb.set_trace()
+                    print("Pause here")
                 # Save lapse parameters for plotting next:
                 this_ll = log_likelihoods[init]
                 if num_lapse_params == 1:

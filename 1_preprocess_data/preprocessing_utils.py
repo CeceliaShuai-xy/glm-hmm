@@ -13,7 +13,7 @@ import scipy.io as sio
 import json
 import os
 from oneibl.onelight import ONE
-
+import pdb
 one = ONE()
 
 
@@ -26,7 +26,8 @@ def get_animal_name(eid):
 
 
 def get_raw_data(eid):
-    # X = horzcat(stim', trialType', prevChoice', wsls',flankerCont');
+    # {'Stim','TrialType','Flanker', 'FlankerContrast','PrevStim', ...
+#         'PrevType', 'PrevChoice','WSLS', 'PrevReward', 'Choice(y1)','ReactionT(y2)'}
     print(eid)
     # get session id:
     raw_session_id = eid.split('Subjects/')[1]
@@ -38,22 +39,23 @@ def get_raw_data(eid):
     current_dir = os.getcwd()
     os.chdir(eid)
 
-    # Get choice, stim & flanker data and rewarded/not rewarded:
+    # Get dependent variables
     choice = sio.loadmat(eid + '/choice.mat')["choice"]
+    rxt = sio.loadmat(eid + '/rxt.mat')["rxt"]
+    # get independent variables
     stim = sio.loadmat(eid + '/stim.mat')["stim"]
-    flanker_contrast = sio.loadmat(eid + '/flankerCont.mat')["flankerCont"]
-    rewarded = sio.loadmat(eid + '/rewarded.mat')["rewarded"]
     trialType = sio.loadmat(eid + '/trialType.mat')["trialType"]
-    wsls = sio.loadmat(eid + '/wsls.mat')["wsls"]
-    # flanker = sio.loadmat(eid + '/flanker.mat')["flanker"]
-    # reactionT = sio.loadmat(eid + '/reactionT.mat')["reactionT"]
-    # prevType = sio.loadmat(eid + '/prevType.mat')["prevType"]
+    flanker = sio.loadmat(eid + '/flanker.mat')["flanker"]
+    flanker_contrast = sio.loadmat(eid + '/flankerCont.mat')["flankerCont"]
+    prevStim = sio.loadmat(eid + '/prevStim.mat')["prevStim"]
+    prevType = sio.loadmat(eid + '/prevType.mat')["prevType"]
     prevChoice = sio.loadmat(eid + '/predChoice.mat')["prevChoice"]
-
+    wsls = sio.loadmat(eid + '/wsls.mat')["wsls"]
+    rewarded = sio.loadmat(eid + '/rewarded.mat')["rewarded"]
+    prevReward = sio.loadmat(eid + '/prevReward.mat')["prevReward"]
     os.chdir(current_dir)
-    # return animal, session_id, choice, stim, flanker, flanker_contrast,\
-    #       rewarded, trialType, reactionT, wsls, prevType, prevChoice
-    return animal, session_id, choice, stim, rewarded, trialType, prevChoice, wsls,flanker_contrast
+    return animal, session_id, choice, rxt, stim, trialType, flanker, \
+        flanker_contrast, prevStim, prevType, prevChoice, wsls, rewarded, prevReward
 
 
 def create_stim_vector(stim_left, stim_right):
@@ -144,39 +146,39 @@ def create_stim_vector(stim_left, stim_right):
 #     return new_choice_vector
 
 
-def create_design_mat(stim, trialType, prevChoice, wsls,flankerCont):
-    # Create unnormalized_inpt
-    # with first column = stim_right - stim_left,
-    # second column as past choice, third column as WSLS
+def create_design_mat(stim, trialType, flanker, \
+        flanker_contrast, prevStim, prevType, prevChoice, wsls, prevReward):
 
     T = stim.shape[1]
-    design_mat = np.zeros((T, 5))
+    design_mat = np.zeros((T, 9))
     design_mat[:, 0] = stim 
     design_mat[:, 1] = trialType
-    design_mat[:, 2] = prevChoice
-    design_mat[:, 3] = wsls
-    design_mat[:, 4] = flankerCont
-    # design_mat = np.zeros((T, 4))
-    # design_mat[:, 0] = flanker_contrast
-    # design_mat[:, 1] = rewarded
-    # design_mat[:, 2] = trialType
-    # design_mat[:, 3] = wsls
+    design_mat[:, 2] = flanker
+    design_mat[:, 3] = flanker_contrast
+    design_mat[:, 4] = prevStim
+    design_mat[:, 5] = prevType
+    design_mat[:, 6] = prevChoice
+    design_mat[:, 7] = wsls
+    design_mat[:, 8] = prevReward
     return design_mat
 
 
 def get_all_unnormalized_data_this_session(eid):
     # Load raw data
-    animal, session_id, choice, stim,\
-          rewarded, trialType, prevChoice, wsls, flankerCont\
+    animal, session_id, choice, rxt, stim, trialType, \
+        flanker, flanker_contrast, prevStim, prevType, \
+        prevChoice, wsls, rewarded, prevReward \
         = get_raw_data(eid)
     
     
  
  # 11/29: change to fewer params 
     # Create design mat = matrix of size T x 9
-    unnormalized_inpt = create_design_mat(stim, trialType, prevChoice, wsls,flankerCont)
-
-    y = choice.reshape(-1,1) 
+    unnormalized_inpt = create_design_mat(stim, trialType, flanker, \
+        flanker_contrast, prevStim, prevType, prevChoice, wsls, prevReward)
+    # pdb.set_trace()
+    # y = np.hstack((choice.reshape(-1,1), rxt.reshape(-1,1)))
+    y =choice.reshape(-1,1)
     session = [session_id for i in range(y.shape[0])]
     rewarded = rewarded.reshape(-1,1)
 
