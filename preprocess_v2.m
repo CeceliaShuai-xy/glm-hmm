@@ -32,7 +32,7 @@
 clear
 clc
 % load data
-animal = 'M1';
+animal = 'M15';
 load(['./data/' animal '_data.mat'])
 target_contrast = 6; 
 data_path = ['./data/Subjects/' animal '/'];
