@@ -37,10 +37,11 @@ clear
 clc
 close all
 % load data
-animal = 'M1';
+animal = 'M15';
 load(['./data/' animal '_data.mat'])
 target_contrast = 6; 
 data_path = ['./data/Subjects/' animal '/'];
+rng(1);
 if ~exist(data_path,'dir')
     mkdir(data_path)
 end
@@ -63,6 +64,11 @@ for session_id = 1:length(mdata)
 
     %idx of trials where there's no flanker
     id_no_flanker = find(session_data.dist_cont_arr==0);
+    
+    %Shuffle data based on idx shuffling
+    id_shuffle = randperm(data_length);
+    id_shuffle = id_shuffle(1:end-1);
+
     temp = find(session_data.dist_type_arr==9);
     assert(unique(temp == id_no_flanker),'flanker error')
     
@@ -72,8 +78,11 @@ for session_id = 1:length(mdata)
     trialType(trialType==0) = -1;% incongruent -> 1
     trialType(trialType==1) = 1;% congruent -> 2
     trialType(id_no_flanker) = 0; % no flanker -> 0
-    prevType = trialType(1:end-1);
+
+%     prevType = trialType(1:end-1);
+    prevType_SHUFFLE = trialType(id_shuffle);
     trialType = trialType(2:end);
+    
     
 
     % get flanker contrast
@@ -92,8 +101,9 @@ for session_id = 1:length(mdata)
 
     % get reward history
     rewarded = session_data.corr_arr; %{-2 missed, -1 incorrect,1 correct}
-    prevReward = rewarded(1:end-1);
     
+    prevReward_SHUFFLE = rewarded(id_shuffle);
+
     % derive choice history, initiate chocie array
     choice = rewarded;
     % stim = {0,1}
@@ -112,15 +122,18 @@ for session_id = 1:length(mdata)
     
     % transfrom stim {0,1} ->{-1,1}
     stim(stim==0)=-1;
-    prevStim = stim(1:end-1);
+%     prevStim = stim(1:end-1);
+    prevStim_SHUFFLE = stim(id_shuffle);
 
-    prevChoice = choice(1:end-1);
+%     prevChoice = choice(1:end-1);
+    prevChoice_SHUFFLE = choice(id_shuffle);
     choice = choice(2:end);
     stim = stim(2:end);
     rewarded = rewarded(2:end);
 
+    
     % get wsls covariate
-    wsls = create_wsls_covariate(prevChoice, prevReward);
+    wsls_SHUFFLE = create_wsls_covariate(prevChoice_SHUFFLE, rewarded);
     
     % get reaction time
     rxt = session_data.rxt_arr';
@@ -130,37 +143,37 @@ for session_id = 1:length(mdata)
     assert(length(choice) == data_length,'abnormal choice length')
     assert(length(rxt) == data_length,'abnormal rxt length')
     assert(length(stim) == data_length,'abnormal stim length')
-    assert(length(prevStim) == data_length,'abnormal prevStim length')
+    assert(length(prevStim_SHUFFLE) == data_length,'abnormal prevStim length')
     assert(length(trialType) == data_length,'abnormal trialType length')
-    assert(length(prevType) == data_length,'abnormal prevType length')
-    assert(length(prevChoice) == data_length,'abnormal prevChoice length')
-    assert(length(wsls) == data_length,'abnormal wsls length')
+    assert(length(prevType_SHUFFLE) == data_length,'abnormal prevType length')
+    assert(length(prevChoice_SHUFFLE) == data_length,'abnormal prevChoice length')
+    assert(length(wsls_SHUFFLE) == data_length,'abnormal wsls length')
     assert(length(flankerCont) == data_length,'abnormal flankerCont length')
     assert(length(flanker) == data_length,'abnormal flanker length')
     assert(length(rewarded) == data_length,'abnormal rewarded length')
-    assert(length(prevReward) == data_length,'abnormal prevReward length')
+    assert(length(prevReward_SHUFFLE) == data_length,'abnormal prevReward length')
 
     % save all vars
     save([save_path '/choice.mat'],"choice")
     save([save_path '/rxt.mat'],"rxt")
 
     save([save_path '/stim.mat'],"stim")
-    save([save_path '/prevStim.mat'],"prevStim")
+    save([save_path '/prevStim.mat'],"prevStim_SHUFFLE")
     save([save_path '/trialType.mat'],"trialType")
-    save([save_path '/prevType.mat'],"prevType")
-    save([save_path '/predChoice.mat'],"prevChoice")
-    save([save_path '/wsls.mat'],"wsls")
+    save([save_path '/prevType.mat'],"prevType_SHUFFLE")
+    save([save_path '/predChoice.mat'],"prevChoice_SHUFFLE")
+    save([save_path '/wsls.mat'],"wsls_SHUFFLE")
     save([save_path '/flanker.mat'],"flanker")
     save([save_path '/flankerCont.mat'],"flankerCont")
     save([save_path '/rewarded.mat'],"rewarded")
-    save([save_path '/prevReward.mat'],"prevReward")
+    save([save_path '/prevReward.mat'],"prevReward_SHUFFLE")
     
     
 
     % not to save but to visualize inputs and y
     X = horzcat(stim', trialType', flanker', ...
-        flankerCont', prevStim', prevType', ...
-        prevChoice', wsls',prevReward');
+        flankerCont', prevStim_SHUFFLE', prevType_SHUFFLE', ...
+        prevChoice_SHUFFLE', wsls_SHUFFLE',prevReward_SHUFFLE');
     y = horzcat(choice',rxt');
     design_matrix = [X y];
     DesignTable = array2table(design_matrix,'VariableNames', ...
@@ -173,20 +186,20 @@ for session_id = 1:length(mdata)
     plot(find(rewarded==1),choice(rewarded==1),'.', 'color','b', 'MarkerSize', 10)
     hold on
     plot(find(rewarded==-1),choice(rewarded==-1),'.', 'color','r', 'MarkerSize', 10)
-    ylim([-0.5 1.5])
+    ylim([-1.5 1.5])
     xlim([0 200])
     title(['Accuracy = ' num2str(sum(rewarded==1)/length(stim))])
     xlabel('trials')
-    yticks([0 1])
+    yticks([-1 1])
     yticklabels(["vertical"; "horizontal"])
-%     ytickangle(45)
+    ytickangle(90)
     hold off
     
 end
-saveas(gcf,[animal '_performance'],'jpg')
+% saveas(gcf,[animal '_performance'],'jpg')
 
 %% Helper functions
-function wsls =  create_wsls_covariate(prevChoice, PrevReward)
+function wsls =  create_wsls_covariate(prevChoice, rewarded)
 %{
 inputs:
     rewarded: {-1, 1}, -1 corresponds to failure, 1 corresponds to success
@@ -203,12 +216,13 @@ output:
 % remap choice vals
 remapped_choice = prevChoice * 2 - 1; % map choice to {-1, 1}
 assert(sum(unique(remapped_choice) == [-1,1])==2,'remapping error')
-wsls = remapped_choice .* PrevReward;
+pre_rewarded = horzcat(rewarded(1),rewarded); pre_rewarded = pre_rewarded(1:end-1);
+wsls = remapped_choice .* pre_rewarded;
 assert(length(unique(wsls)) == 2, "wsls should be in {-1, 1}")
 end
 % wsls = 1:
-% choice = -1; prev_rewarded = -1 (vert, not rewarded)
-% choice = 1; prev_rewarded = 1 (horz, rewarded)
+% choice = -1; reward = -1 (vert, not rewarded)
+% choice = 1; reward = 1 (horz, rewarded)
 % wsls = -1:
-% choice = -1; prev_rewarded = 1 (vert, rewarded)
-% choice = 1; prev_rewarded = -1 (horz, not rewarded)
+% choice = -1; reward = 1 (vert, rewarded)
+% choice = 1; reward = -1 (horz, not rewarded)
