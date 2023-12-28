@@ -37,7 +37,7 @@ clear
 clc
 close all
 % load data
-animal = 'M1';
+animal = 'M15';
 load(['./data/' animal '_data.mat'])
 target_contrast = 6; 
 data_path = ['./data/Subjects/' animal '/'];
@@ -141,20 +141,20 @@ for session_id = 1:length(mdata)
     assert(length(prevReward) == data_length,'abnormal prevReward length')
 
     % save all vars
-    save([save_path '/choice.mat'],"choice")
-    save([save_path '/rxt.mat'],"rxt")
-
-    save([save_path '/stim.mat'],"stim")
-    save([save_path '/prevStim.mat'],"prevStim")
-    save([save_path '/trialType.mat'],"trialType")
-    save([save_path '/prevType.mat'],"prevType")
-    save([save_path '/predChoice.mat'],"prevChoice")
-    save([save_path '/wsls.mat'],"wsls")
-    save([save_path '/flanker.mat'],"flanker")
-    save([save_path '/flankerCont.mat'],"flankerCont")
-    save([save_path '/rewarded.mat'],"rewarded")
-    save([save_path '/prevReward.mat'],"prevReward")
-    
+%     save([save_path '/choice.mat'],"choice")
+%     save([save_path '/rxt.mat'],"rxt")
+% 
+%     save([save_path '/stim.mat'],"stim")
+%     save([save_path '/prevStim.mat'],"prevStim")
+%     save([save_path '/trialType.mat'],"trialType")
+%     save([save_path '/prevType.mat'],"prevType")
+%     save([save_path '/predChoice.mat'],"prevChoice")
+%     save([save_path '/wsls.mat'],"wsls")
+%     save([save_path '/flanker.mat'],"flanker")
+%     save([save_path '/flankerCont.mat'],"flankerCont")
+%     save([save_path '/rewarded.mat'],"rewarded")
+%     save([save_path '/prevReward.mat'],"prevReward")
+%     
     
 
     % not to save but to visualize inputs and y
@@ -206,9 +206,9 @@ assert(sum(unique(remapped_choice) == [-1,1])==2,'remapping error')
 wsls = remapped_choice .* PrevReward;
 assert(length(unique(wsls)) == 2, "wsls should be in {-1, 1}")
 end
-% wsls = 1:
+% wsls = 1:choose horz this trial
 % choice = -1; prev_rewarded = -1 (vert, not rewarded)
 % choice = 1; prev_rewarded = 1 (horz, rewarded)
-% wsls = -1:
+% wsls = -1: choose vert this trial
 % choice = -1; prev_rewarded = 1 (vert, rewarded)
 % choice = 1; prev_rewarded = -1 (horz, not rewarded)
