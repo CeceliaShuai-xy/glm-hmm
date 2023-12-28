@@ -3,7 +3,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-
+import pdb
 sys.path.append('../')
 
 from plotting_utils import load_glmhmm_data, load_cv_arr, load_data, \
@@ -13,17 +13,17 @@ from plotting_utils import load_glmhmm_data, load_cv_arr, load_data, \
 
 
 if __name__ == '__main__':
-    animal = "CSHL_008"
+    animal = "M15"
     alpha_val = 2
     sigma_val = 2
 
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    results_dir = '../../results/ibl_individual_fit/' + animal + '/'
-    figure_dir = '../../figures/figure_2/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/' + animal + '/'
+    figure_dir = '../../figures/figure_2' + '_' + animal + '/'
 
-    fig = plt.figure(figsize=(4.6, 2), dpi=80, facecolor='w', edgecolor='k')
-    plt.subplots_adjust(left=0.13, bottom=0.23, right=0.9, top=0.8)
-    K = 3
+    fig = plt.figure(figsize=(7, 2), dpi=80, facecolor='w', edgecolor='k')
+    plt.subplots_adjust(left=0.13, bottom=0.23, right=0.9, top=0.8, wspace=0.5,hspace=0.4)
+    K = 4
     inpt, y, session = load_data(data_dir + animal + '_processed.npz')
     unnormalized_inpt, _, _ = load_data \
         (data_dir + animal + '_unnormalized.npz')
@@ -58,20 +58,22 @@ if __name__ == '__main__':
         '#999999', '#e41a1c', '#dede00'
     ]
     for k in range(K):
-        plt.subplot(1, 3, k+1)
+        plt.subplot(1, K, k+1)
+        # if k == 2:
+        #     pdb.set_trace()
         # USE GLM WEIGHTS TO GET PROB RIGHT
         stim_vals, prob_right_max = get_prob_right(-weight_vectors, inpt, k, 1,
                                                    1)
-        _, prob_right_min = get_prob_right(-weight_vectors, inpt, k, -1, -1)
+        _, prob_right_min = get_prob_right(-weight_vectors, inpt, k, 0, -1)
         plt.plot(stim_vals,
                  prob_right_max,
                  '-',
                  color=cols[k],
                  alpha=1,
                  lw=1,
-                 zorder=5)  # went R and was rewarded on previous trial
+                 zorder=5)  #  went R and was rewarded on previous trial
         plt.plot(stim_vals,
-                 get_prob_right(-weight_vectors, inpt, k, -1, 1)[1],
+                 get_prob_right(-weight_vectors, inpt, k, 0, 1)[1],
                  '--',
                  color=cols[k],
                  alpha=0.5,
@@ -91,30 +93,52 @@ if __name__ == '__main__':
         plt.yticks([0, 0.5, 1], ['', '', ''], fontsize=10)
         plt.ylabel('')
         plt.xlabel('')
+
+
         if k == 0:
             plt.title("state 1 \n(\"engaged\")", fontsize=10, color=cols[k])
             plt.xticks([min(stim_vals), 0, max(stim_vals)],
                        labels=['-100', '0', '100'],
                        fontsize=10)
             plt.yticks([0, 0.5, 1], ['0', '0.5', '1'], fontsize=10)
-            plt.ylabel('p("R")', fontsize=10)
+            plt.ylabel('p("Horizontal")', fontsize=10)
             plt.xlabel('stimulus', fontsize=10)
         if k == 1:
-            plt.title("state 2 \n(\"biased left\")",
+            plt.title("state 2 \n(\"biased horizontal\")",
                       fontsize=10,
                       color=cols[k])
             plt.xticks([min(stim_vals), 0, max(stim_vals)],
                        labels=['', '', ''],
                        fontsize=10)
             plt.yticks([0, 0.5, 1], ['', '', ''], fontsize=10)
+            plt.xticks([min(stim_vals), 0, max(stim_vals)],
+                       labels=['-100', '0', '100'],
+                       fontsize=10)
+            plt.xlabel('stimulus', fontsize=10)
         if k == 2:
-            plt.title("state 3 \n(\"biased right\")",
+            plt.title("state 3 \n(\"biased horizontal\")",
                       fontsize=10,
                       color=cols[k])
             plt.xticks([min(stim_vals), 0, max(stim_vals)],
                        labels=['', '', ''],
                        fontsize=10)
             plt.yticks([0, 0.5, 1], ['', '', ''], fontsize=10)
+            plt.xticks([min(stim_vals), 0, max(stim_vals)],
+                       labels=['-100', '0', '100'],
+                       fontsize=10)
+            plt.xlabel('stimulus', fontsize=10)
+        if k == 3:
+            plt.title("state 4 \n(\"win-stay-lose-shift\")",
+                      fontsize=10,
+                      color=cols[k])
+            plt.xticks([min(stim_vals), 0, max(stim_vals)],
+                       labels=['', '', ''],
+                       fontsize=10)
+            plt.yticks([0, 0.5, 1], ['', '', ''], fontsize=10)
+            plt.xticks([min(stim_vals), 0, max(stim_vals)],
+                       labels=['-100', '0', '100'],
+                       fontsize=10)
+            plt.xlabel('stimulus', fontsize=10)
         plt.axhline(y=0.5, color="k", alpha=0.45, ls=":", linewidth=0.5)
         plt.axvline(x=0, color="k", alpha=0.45, ls=":", linewidth=0.5)
         plt.gca().spines['right'].set_visible(False)

@@ -1,5 +1,5 @@
 import json
-
+import pdb
 import numpy as np
 import numpy.random as npr
 import ssm
@@ -296,13 +296,40 @@ def get_prob_right(weight_vectors, inpt, k, pc, wsls):
     max_val_stim = np.max(inpt[:, 0])
     stim_vals = np.arange(min_val_stim, max_val_stim, 0.05)
     # create input matrix - cols are stim, pc, wsls, bias
-    x = np.array([
-        stim_vals,
-        np.repeat(pc, len(stim_vals)),
-        np.repeat(wsls, len(stim_vals)),
-        np.repeat(1, len(stim_vals))
-    ]).T
-    wx = np.matmul(x, weight_vectors[k][0])
+    # labels_for_plot = [ 'Stim', 'flanker_ori',\
+                    #    'flanker_cont', 'prevStim',\
+                    #    'prevChoice', \
+                    #    'WSLS', 'Bias']
+    
+    flanker_ori = np.unique(inpt[:, 1])
+    flanker_cont = np.unique(inpt[:, 2])
+    prevStim = np.unique(inpt[:, 3])
+
+    weights = weight_vectors[k][0]
+    wx_temp = []
+    for m in flanker_ori:
+        for n in flanker_cont:
+            for o in prevStim:
+                x = np.array([
+                stim_vals,
+                np.repeat(m, len(stim_vals)),
+                np.repeat(n, len(stim_vals)),
+                np.repeat(o, len(stim_vals)),
+                np.repeat(pc, len(stim_vals)),
+                np.repeat(wsls, len(stim_vals)),
+                np.repeat(1, len(stim_vals))
+                ]).T
+                wx_temp.append(np.matmul(x, weights)) 
+    # pdb.set_trace()
+    wx = np.sum(wx_temp, axis = 0)
+
+    # x = np.array([
+    #     stim_vals,
+    #     np.repeat(pc, len(stim_vals)),
+    #     np.repeat(wsls, len(stim_vals)),
+    #     np.repeat(1, len(stim_vals))
+    # ]).T
+    # wx = np.matmul(x, weight_vectors[k][0])
     return stim_vals, expit(wx)
 
 
@@ -463,12 +490,12 @@ def find_change_points(states_max_posterior):
     num_sess = len(states_max_posterior)
     change_points = []
     for sess in range(num_sess):
-        if len(states_max_posterior[sess]) == 90:
-            # get difference between consec states
-            diffs = np.diff(states_max_posterior[sess])
-            # Get locations of all change points
-            idx_change_points = np.where(np.abs(diffs) > 0)[0]
-            change_points.append(idx_change_points)
+        # if len(states_max_posterior[sess]) == 90:
+        # get difference between consec states
+        diffs = np.diff(states_max_posterior[sess])
+        # Get locations of all change points
+        idx_change_points = np.where(np.abs(diffs) > 0)[0]
+        change_points.append(idx_change_points)
     assert len(change_points) == num_sess
     return change_points
 

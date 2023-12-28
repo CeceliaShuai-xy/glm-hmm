@@ -2,7 +2,7 @@
 # three states
 import json
 import sys
-
+import pdb
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -13,12 +13,12 @@ from plotting_utils import load_glmhmm_data, load_cv_arr, load_data, \
     create_violation_mask, get_marginal_posterior
 
 if __name__ == '__main__':
-    animal = "CSHL_008"
-    K = 3
+    animal = "M15"
+    K = 4
 
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    results_dir = '../../results/ibl_individual_fit/' + animal + '/'
-    figure_dir = '../../figures/figure_2/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/' + animal + '/'
+    figure_dir = '../../figures/figure_2' + '_' + animal + '/'
 
     accuracies_to_plot = []
 
@@ -64,18 +64,19 @@ if __name__ == '__main__':
     states_max_posterior = np.argmax(posterior_probs, axis=1)
 
     for k in range(K):
+        ## np.where((posterior_probs[:, k] >= 0.9) & (mask == 1))[0]
         idx_of_interest = \
-            np.where((posterior_probs[:, k] >= 0.9) & (mask == 1))[0]
+            np.where((posterior_probs[:, k] >= 0.5) & (mask == 1))[0]
         inpt_this_state, unnormalized_inpt_this_state, y_this_state = \
             inpt[idx_of_interest, :], unnormalized_inpt[idx_of_interest, :], \
             y[idx_of_interest, :]
         not_zero_loc = np.where(unnormalized_inpt_this_state[:, 0] != 0)[0]
         correct_ans = (np.sign(unnormalized_inpt_this_state[not_zero_loc, 0]) +
                        1) / 2
+        # pdb.set_trace()
         acc = np.sum(y_this_state[not_zero_loc,
                                   0] == correct_ans) / len(correct_ans)
         accuracies_to_plot.append(acc)
-
     cols = [
         '#ff7f00', '#4daf4a', '#377eb8', '#f781bf', '#a65628', '#984ea3',
         '#999999', '#e41a1c', '#dede00'
@@ -89,9 +90,9 @@ if __name__ == '__main__':
         else:
             col = cols[z - 1]
         plt.bar(z, acc*100, width=0.8, color=col)
-    plt.ylim((50, 100))
-    plt.xticks([0, 1, 2, 3], ['All', '1', '2', '3'], fontsize=10)
-    plt.yticks([50, 75, 100], fontsize=10)
+    plt.ylim((0, 100))
+    plt.xticks([0, 1, 2, 3, 4], ['All', '1', '2', '3', '4'], fontsize=10)
+    plt.yticks([25, 50, 75, 100], fontsize=10)
     plt.xlabel('state', fontsize=10)
     plt.ylabel('accuracy (%)', fontsize=10, labelpad=-0.5)
     plt.gca().spines['right'].set_visible(False)

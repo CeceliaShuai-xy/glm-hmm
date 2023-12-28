@@ -12,12 +12,13 @@ from plotting_utils import load_glmhmm_data, load_cv_arr, load_data, \
     create_violation_mask, get_marginal_posterior, get_was_correct
 
 if __name__ == '__main__':
-    animal = "CSHL_008"
-    K = 3
+    animal = "M1"
+    K = 4
 
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    results_dir = '../../results/ibl_individual_fit/' + animal + '/'
-    figure_dir = '../../figures/figure_3/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/' + animal + '/'
+    figure_dir = '../../figures/figure_2' + '_' + animal + '/'
+
 
     inpt, y, session = load_data(data_dir + animal + '_processed.npz')
     unnormalized_inpt, _, _ = load_data(data_dir + animal +

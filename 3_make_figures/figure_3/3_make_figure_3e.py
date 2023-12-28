@@ -2,7 +2,7 @@
 # 2020))
 import json
 import sys
-
+import pdb
 sys.path.append('../')
 
 import matplotlib.pyplot as plt
@@ -13,12 +13,12 @@ from plotting_utils import load_glmhmm_data, load_cv_arr, load_data, \
     create_violation_mask, get_marginal_posterior, find_change_points
 
 if __name__ == '__main__':
-    animal = "CSHL_008"
-    K = 3
+    animal = "M1"
+    K = 4
 
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    results_dir = '../../results/ibl_individual_fit/' + animal + '/'
-    figure_dir = '../../figures/figure_3/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/' + animal + '/'
+    figure_dir = '../../figures/figure_2' + '_' + animal + '/'
 
     cv_file = results_dir + "/cvbt_folds_model.npz"
     cvbt_folds_model = load_cv_arr(cv_file)
@@ -71,6 +71,7 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(2, 2))
     plt.subplots_adjust(left=0.4, bottom=0.3, right=0.95, top=0.95)
     frac_non_zero = 0
+    pdb.set_trace()
     for z, occ in enumerate(cp_hist):
         plt.bar(cp_bin_locs[z],
                 occ / num_sess,

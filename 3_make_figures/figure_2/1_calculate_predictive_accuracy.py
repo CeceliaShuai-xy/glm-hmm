@@ -20,8 +20,8 @@ from plotting_utils import load_glmhmm_data, load_animal_list, load_cv_arr, \
 cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306"]
 
 if __name__ == '__main__':
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    overall_dir = '../../results/ibl_individual_fit/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    overall_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
     animal_list = load_animal_list(data_dir + 'animal_list.npz')
     sigma_val = 2
     alpha_val = 2
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         _, glm_weights = load_glm_vectors(
             results_dir + '/GLM/fold_0/variables_of_interest_iter_0.npz')
         predictive_acc_glm = []
-        for fold in range(5):
+        for fold in range(3):
             # identify the idx for exclusion:
             idx_to_exclude = trial_fold_lookup_table[np.where(
                 trial_fold_lookup_table[:, 1] == fold)[0], 0].astype('int')
@@ -69,7 +69,7 @@ if __name__ == '__main__':
                              '/Lapse_Model/fold_0/lapse_model_params_two_param.npz'
             _, lapse_glm_weights, _, lapse_p, _ = load_lapse_params(lapse_file)
             predictive_acc_lapse = []
-            for fold in range(5):
+            for fold in range(3):
                 # identify the idx for exclusion:
                 idx_to_exclude = trial_fold_lookup_table[np.where(
                     trial_fold_lookup_table[:, 1] == fold)[0], 0].astype('int')
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 predictive_acc_lapse.append(predictive_acc)
             predictive_acc_mat.append(predictive_acc_lapse)
 
-        for K in range(2, 6):
+        for K in range(2, 5):
             with open(results_dir + "/best_init_cvbt_dict.json", 'r') as f:
                 best_init_cvbt_dict = json.load(f)
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
                 init_state_dist = hmm_params[0][0]
 
                 predictive_acc_this_K = []
-                for fold in range(5):
+                for fold in range(3):
                     # identify the idx for exclusion:
                     idx_to_exclude = trial_fold_lookup_table[np.where(
                         trial_fold_lookup_table[:, 1] == fold)[0],

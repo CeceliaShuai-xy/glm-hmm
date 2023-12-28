@@ -24,16 +24,16 @@ npr.seed(0)
 
 
 if __name__ == '__main__':
-    animal = "CSHL_008"
-    K = 3
+    animal = "M1"
+    K = 4
     sigma_val = 2
     covar_set = 2
     alpha_val = 2
 
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    results_dir = '../../results/ibl_individual_fit/' + animal + '/'
-    figure_dir = '../../figures/figure_2/'
-
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/' + animal + '/'
+    figure_dir = '../../figures/figure_2' + '_' + animal + '/'
+    
     cv_file = results_dir + "/cvbt_folds_model.npz"
     cvbt_folds_model = load_cv_arr(cv_file)
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     hmm_params, lls = load_glmhmm_data(raw_file)
     weight_vectors = hmm_params[2]
 
-    D, M, C = 1, 4, 2
+    D, M, C = 1, 7, 2
     this_hmm = HMM(K,
                    D,
                    M,
@@ -83,12 +83,12 @@ if __name__ == '__main__':
 
     for i, input in enumerate(inputs):
         T = input.shape[0]
-        # Sample a value for t = 0 value of past choice covariate
+        # # Sample a value for t = 0 value of past choice covariate
         pc = (2 * bernoulli.rvs(0.5, size=1)) - 1
-        input[0, 1] = pc
-        # Sample a value for t = 0 value of wsls covariate
+        # input[0, 1] = pc
+        # # Sample a value for t = 0 value of wsls covariate
         wsls = (2 * bernoulli.rvs(0.5, size=1)) - 1
-        input[0, 2] = wsls
+        # input[0, 2] = wsls
         latent_z = np.zeros(input.shape[0], dtype=int)
         data = np.zeros(input.shape[0], dtype=int)
 

@@ -2,7 +2,7 @@
 import json
 import os
 import sys
-
+import pdb
 import numpy as np
 
 sys.path.insert(0, '../')
@@ -12,12 +12,12 @@ from plotting_utils import load_glmhmm_data, load_cv_arr, \
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    animal = "CSHL_008"
-    K = 3
+    animal = "M1"
+    K = 4
 
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    results_dir = '../../results/ibl_individual_fit/' + animal + '/'
-    figure_dir = '../../figures/figure_2/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/' + animal + '/'
+    figure_dir = '../../figures/figure_2' + '_' + animal + '/'
     if not os.path.exists(figure_dir):
         os.makedirs(figure_dir)
 
@@ -30,16 +30,16 @@ if __name__ == '__main__':
     # Get cvbt and pred acc:
     cols = ['#999999', '#984ea3', '#e41a1c', '#dede00']
     cv_arr = load_cv_arr(results_dir + "/cvbt_folds_model.npz")
-
-    cv_arr_for_plotting = cv_arr[[0, 2, 3, 4, 5, 6], :]
+    # pdb.set_trace()
+    cv_arr_for_plotting = cv_arr[[0, 2, 3, 4, 5], :]
 
     pred_acc_arr = load_cv_arr(results_dir + "predictive_accuracy_mat.npz")
-    pred_acc_arr_for_plotting = pred_acc_arr[[0, 2, 3, 4, 5, 6], :]
+    pred_acc_arr_for_plotting = pred_acc_arr[[0, 2, 3, 4, 5], :]
 
     # ========== FIG 2b ==========
     fig = plt.figure(figsize=(2, 1.6))
-    plt.subplots_adjust(left=0.3, bottom=0.3, right=0.9, top=0.9)
-    plt.plot([0, 0.5, 1, 2, 3, 4],
+    plt.subplots_adjust(left=0.4, bottom=0.3, right=0.9, top=0.9)
+    plt.plot([0, 0.5, 1, 2, 3],
              np.mean(cv_arr_for_plotting, axis=1),
              '-o',
              color=cols[0],
@@ -47,11 +47,11 @@ if __name__ == '__main__':
              alpha=1,
              lw=1.5,
              markersize=4)
-    plt.yticks([0.30, 0.35, 0.4, 0.45],
-               labels=["0.30", "0.35", "0.40", "0.45"],
-               fontsize=10)
-    plt.xticks([0, 0.5, 1, 2, 3, 4],
-               labels=['1', 'L.', '2', '3', '4', '5'],
+    # plt.yticks([0.30, 0.35, 0.4, 0.45],
+    #            labels=["0.30", "0.35", "0.40", "0.45"],
+    #            fontsize=10)
+    plt.xticks([0, 0.5, 1, 2, 3],
+               labels=['1', 'L.', '2', '3', '4'],
                fontsize=10)
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['top'].set_visible(False)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     # ========== FIG 2c ==========
     fig = plt.figure(figsize=(2, 1.6))
     plt.subplots_adjust(left=0.3, bottom=0.3, right=0.9, top=0.9)
-    plt.plot([0, 0.5, 1, 2, 3, 4],
+    plt.plot([0, 0.5, 1, 2, 3],
              np.mean(pred_acc_arr_for_plotting, axis=1),
              '-o',
              color=cols[1],
@@ -70,11 +70,11 @@ if __name__ == '__main__':
              alpha=1,
              lw=1.5,
              markersize=4)
-    plt.yticks([0.78, 0.8, 0.82, 0.84],
-               labels=["78", "80", "82", "84"],
+    plt.yticks([0.78, 0.8, 0.82, 0.84, 0.86, 0.88, 0.9],
+               labels=["78", "80", "82", "84", "86", "88", "90"],
                fontsize=10)
-    plt.xticks([0, 0.5, 1, 2, 3, 4],
-               labels=['1', 'L.', '2', '3', '4', '5'],
+    plt.xticks([0, 0.5, 1, 2, 3],
+               labels=['1', 'L.', '2', '3', '4'],
                fontsize=10)
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['top'].set_visible(False)
@@ -102,7 +102,7 @@ if __name__ == '__main__':
                             ha="center",
                             va="center",
                             color="k",
-                            fontsize=10)
+                            fontsize=8)
     plt.xlim(-0.5, K - 0.5)
     plt.xticks(range(0, K),
                ('1', '2', '3', '4', '4', '5', '6', '7', '8', '9', '10')[:K],
@@ -126,19 +126,27 @@ if __name__ == '__main__':
     plt.subplots_adjust(left=0.3, bottom=0.4, right=0.8, top=0.9)
     M = weight_vectors.shape[2] - 1
     for k in range(K):
+        # pdb.set_trace()
         plt.plot(range(M + 1),
-                 weight_vectors[k][0][[0, 3, 1, 2]],
+                 weight_vectors[k][0][:],
                  marker='o',
+                 markersize = 2,
                  label="state " + str(k + 1),
                  color=cols[k],
                  lw=1,
                  alpha=0.7)
+        
+    plt.legend(fontsize=4)
     plt.yticks([-2.5, 0, 2.5, 5], fontsize=10)
+    labels_for_plot = [ 'Stim', 'flanker_ori',\
+                       'flanker_cont', 'prevStim',\
+                       'prevChoice', \
+                       'WSLS', 'Bias']
     plt.xticks(
-        [0, 1, 2, 3],
-        ['stimulus', 'bias', 'prev. \nchoice', 'win-stay-\nlose-switch'],
-        fontsize=10,
-        rotation=45)
+        list(range(0, len(labels_for_plot))),
+        labels_for_plot,
+        fontsize=8,
+        rotation=90)
     plt.ylabel("GLM weight", fontsize=10)
     plt.axhline(y=0, color="k", alpha=0.5, ls="--", lw=0.5)
     plt.gca().spines['right'].set_visible(False)

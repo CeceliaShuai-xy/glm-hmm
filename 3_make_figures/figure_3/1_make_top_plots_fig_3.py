@@ -2,7 +2,7 @@
 import json
 import os
 import sys
-
+import pdb
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -14,12 +14,12 @@ from plotting_utils import load_glmhmm_data, load_cv_arr, load_data, \
 
 
 if __name__ == '__main__':
-    animal = "CSHL_008"
-    K = 3
+    animal = "M15"
+    K = 4
 
-    data_dir = '../../data/ibl/data_for_cluster/data_by_animal/'
-    results_dir = '../../results/ibl_individual_fit/' + animal + '/'
-    figure_dir = '../../figures/figure_3/'
+    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/' + animal + '/'
+    figure_dir = '../../figures/figure_2' + '_' + animal + '/'
     if not os.path.exists(figure_dir):
         os.makedirs(figure_dir)
 
@@ -60,15 +60,17 @@ if __name__ == '__main__':
                                              hmm_params, K, range(K))
     states_max_posterior = np.argmax(posterior_probs, axis=1)
 
-    sess_to_plot = ["CSHL_008-2019-04-29-001", "CSHL_008-2019-08-07-001",
-                    "CSHL_008-2019-05-28-001"]
+    sess_to_plot = ["M15-session1", "M15-session2",  "M15-session3", \
+                    "M15-session4", "M15-session5", "M15-session6"]
 
     cols = ['#ff7f00', '#4daf4a', '#377eb8', '#f781bf', '#a65628', '#984ea3',
             '#999999', '#e41a1c', '#dede00']
+    
+
     fig = plt.figure(figsize=(6, 5))
     plt.subplots_adjust(wspace=0.2, hspace=0.9)
     for i, sess in enumerate(sess_to_plot):
-        plt.subplot(3, 3, i + 4)
+        plt.subplot(3, 3, i + 1)
         idx_session = np.where(session == sess)
         this_inpt, this_y = inpt[idx_session[0], :], y[idx_session[0], :]
         was_correct, idx_easy = get_was_correct(this_inpt, this_y)
@@ -84,7 +86,7 @@ if __name__ == '__main__':
         states_this_sess = states_max_posterior[idx_session[0]]
         state_change_locs = np.where(np.abs(np.diff(states_this_sess)) > 0)[0]
         for change_loc in state_change_locs:
-            plt.axvline(x=change_loc, color='k', lw=0.5, linestyle='--')
+            plt.axvline(x=change_loc, color='k', lw=0.1,alpha=0.5, linestyle='--')
         plt.ylim((-0.13, 1.13))
         if i == 0:
             plt.xticks([0, 45, 90], ["0", "45", "90"], fontsize=10)
@@ -98,13 +100,17 @@ if __name__ == '__main__':
         if i == 0:
             plt.xlabel("trial #", fontsize=10)
             plt.ylabel("choice", fontsize=10)
+    fig.savefig(figure_dir + 'fig3abc_choice.pdf')
 
+    fig = plt.figure(figsize=(6, 5))
+    plt.subplots_adjust(wspace=0.2, hspace=0.9)
     for i, sess in enumerate(sess_to_plot):
         plt.subplot(3, 3, i + 1)
         idx_session = np.where(session == sess)
         this_inpt = inpt[idx_session[0], :]
         posterior_probs_this_session = posterior_probs[idx_session[0], :]
         # Plot trial structure for this session too:
+        # pdb.set_trace()
         for k in range(K):
             plt.plot(posterior_probs_this_session[:, k],
                      label="State " + str(k + 1), lw=1,
@@ -112,7 +118,7 @@ if __name__ == '__main__':
         states_this_sess = states_max_posterior[idx_session[0]]
         state_change_locs = np.where(np.abs(np.diff(states_this_sess)) > 0)[0]
         for change_loc in state_change_locs:
-            plt.axvline(x=change_loc, color='k', lw=0.5, linestyle='--')
+            plt.axvline(x=change_loc, color='k', lw=0.1,alpha=0.5, linestyle='--')
         if i == 0:
             plt.xticks([0, 45, 90], ["0", "45", "90"], fontsize=10)
             plt.yticks([0, 0.5, 1], ["0", "0.5", "1"], fontsize=10)
@@ -129,14 +135,29 @@ if __name__ == '__main__':
 
     # Now plot avg session:
     posterior_probs_mat = []
+    max_session_len = 0
     for i, sess in enumerate(all_sessions):
         idx_session = np.where(session == sess)
         posterior_probs_this_session = posterior_probs[idx_session[0], :]
-        if len(posterior_probs_this_session) == 90:
-            posterior_probs_mat.append(posterior_probs_this_session)
+        # if len(posterior_probs_this_session) == 90:
+        this_len = len(posterior_probs_this_session)
+        if this_len > max_session_len:
+            max_session_len = this_len
+    
+    for i, sess in enumerate(all_sessions):
+        idx_session = np.where(session == sess)
+        posterior_probs_this_session = posterior_probs[idx_session[0], :]
+        padding = ((0, max_session_len - len(posterior_probs_this_session)),\
+            (0,0))
+        posterior_probs_this_session = np.pad(\
+            posterior_probs_this_session, \
+            pad_width = padding, mode='constant', constant_values=np.nan)
+        posterior_probs_mat.append(posterior_probs_this_session)
+    
     posterior_probs_mat = np.array(posterior_probs_mat)
     avg_posterior = np.mean(posterior_probs_mat, axis=0)
     std_dev_posterior = np.std(posterior_probs_mat, axis=0)
+    
     plt.subplot(3, 3, 7)
     for k in range(K):
         plt.plot(avg_posterior[:, k], label="State " + str(k + 1), lw=1,
@@ -155,4 +176,4 @@ if __name__ == '__main__':
     plt.ylabel("p(state)", fontsize=10)
     plt.xticks([0, 45, 90], ["0", "45", "90"], fontsize=10)
     plt.yticks([0, 0.5, 1], ["0", "0.5", "1"], fontsize=10)
-    fig.savefig(figure_dir + 'fig3abc.pdf')
+    fig.savefig(figure_dir + 'fig3abc_pstate.pdf')
