@@ -1,5 +1,3 @@
-#  Fit GLM-HMM to data from all IBL animals together.  These fits will be
-#  used to initialize the models for individual animals
 import os
 import sys
 import autograd.numpy as np
@@ -44,6 +42,7 @@ if __name__ == '__main__':
 
         for i, animal in enumerate(animal_list):
             print(animal)
+            # pdb.set_trace()
             animal_file = data_dir + animal + '_processed.npz'
             session_fold_lookup_table = load_session_fold_lookup(
                 data_dir + animal + '_session_fold_lookup.npz')

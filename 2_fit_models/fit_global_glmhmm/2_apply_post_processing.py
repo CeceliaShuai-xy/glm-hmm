@@ -21,11 +21,11 @@ if __name__ == '__main__':
     C = 2  # number of output classes
     num_folds = 3  # number of folds
     D = 1  # number of output dimensions
-    K_max = 7  # maximum number of latent states
+    K_max = 4  # maximum number of latent states
     num_models = K_max + 2  # model for each latent + 2 lapse models
 
     animal_preferred_model_dict = {}
-    models = ["GLM", "Lapse_Model", "GLM_HMM"]
+    models = ["GLM", "L`apse_Model", "GLM_HMM"]
 
     cvbt_folds_model = np.zeros((num_models, num_folds))
     cvbt_train_folds_model = np.zeros((num_models, num_folds))

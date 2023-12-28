@@ -20,10 +20,10 @@ if __name__ == '__main__':
     transition_alpha = 2
     results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
 
-    labels_for_plot = [ 'stim', 'Type', 'flanker',\
+    labels_for_plot = [ 'stim','flanker',\
                        'contrast', 'pStim',\
-                       'pType','pChoice', \
-                       'wsls', 'pReward', 'bias']
+                       'pChoice', \
+                       'wsls', 'bias']
 
     animal_list = load_animal_list(data_dir + 'animal_list.npz')
     for animal in animal_list:
@@ -76,7 +76,7 @@ if __name__ == '__main__':
                          lw=4)
             plt.xticks(list(range(0, len(labels_for_plot))),
                        labels_for_plot,
-                       rotation='45',
+                       rotation='90',
                        fontsize=24)
             plt.yticks(fontsize=30)
             plt.legend(fontsize=30)
@@ -84,7 +84,7 @@ if __name__ == '__main__':
             # plt.ylim((-15, 2))
             plt.ylabel("Weight", fontsize=30)
             plt.xlabel("Covariate", fontsize=30, labelpad=20)
-            plt.title("GLM Weights: Choice = R", fontsize=40)
+            plt.title("GLM Weights: Choice = Horizontal", fontsize=40)
 
             plt.subplot(1, 4, 2)
             transition_matrix = np.exp(log_transition_matrix)
@@ -154,8 +154,8 @@ if __name__ == '__main__':
             plt.xlabel("Model", fontsize=30)
             plt.ylabel("Normalized LL", fontsize=30)
             plt.xticks([0, 1, 2, 3],
-                    #    ['1 State', '2 State', '3 State', '4 State', '5 State'],
                        ['1 State', '2 State', '3 State', '4 State'],
+                    #    ['1 State', '2 State', '3 State', '4 State'],
                        rotation=45,
                        fontsize=24)
             plt.yticks(fontsize=15)

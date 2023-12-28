@@ -26,8 +26,8 @@ def get_animal_name(eid):
 
 
 def get_raw_data(eid):
-    # {'Stim','TrialType','Flanker', 'FlankerContrast','PrevStim', ...
-#         'PrevType', 'PrevChoice','WSLS', 'PrevReward', 'Choice(y1)','ReactionT(y2)'}
+    # {'Stim','Flanker', 'FlankerContrast','PrevStim', ...
+#         'PrevChoice','WSLS', 'PrevReward', 'Choice(y1)','ReactionT(y2)'}
     print(eid)
     # get session id:
     raw_session_id = eid.split('Subjects/')[1]
@@ -44,18 +44,18 @@ def get_raw_data(eid):
     rxt = sio.loadmat(eid + '/rxt.mat')["rxt"]
     # get independent variables
     stim = sio.loadmat(eid + '/stim.mat')["stim"]
-    trialType = sio.loadmat(eid + '/trialType.mat')["trialType"]
+    # trialType = sio.loadmat(eid + '/trialType.mat')["trialType"]
     flanker = sio.loadmat(eid + '/flanker.mat')["flanker"]
     flanker_contrast = sio.loadmat(eid + '/flankerCont.mat')["flankerCont"]
     prevStim = sio.loadmat(eid + '/prevStim.mat')["prevStim"]
-    prevType = sio.loadmat(eid + '/prevType.mat')["prevType"]
+    # prevType = sio.loadmat(eid + '/prevType.mat')["prevType"]
     prevChoice = sio.loadmat(eid + '/predChoice.mat')["prevChoice"]
     wsls = sio.loadmat(eid + '/wsls.mat')["wsls"]
     rewarded = sio.loadmat(eid + '/rewarded.mat')["rewarded"]
     prevReward = sio.loadmat(eid + '/prevReward.mat')["prevReward"]
     os.chdir(current_dir)
-    return animal, session_id, choice, rxt, stim, trialType, flanker, \
-        flanker_contrast, prevStim, prevType, prevChoice, wsls, rewarded, prevReward
+    return animal, session_id, choice, rxt, stim, flanker, \
+        flanker_contrast, prevStim, prevChoice, wsls, rewarded, prevReward
 
 
 def create_stim_vector(stim_left, stim_right):
@@ -146,27 +146,27 @@ def create_stim_vector(stim_left, stim_right):
 #     return new_choice_vector
 
 
-def create_design_mat(stim, trialType, flanker, \
-        flanker_contrast, prevStim, prevType, prevChoice, wsls, prevReward):
+def create_design_mat(stim, flanker, \
+        flanker_contrast, prevStim, prevChoice, wsls):
 
     T = stim.shape[1]
-    design_mat = np.zeros((T, 9))
+    design_mat = np.zeros((T, 6))
     design_mat[:, 0] = stim 
-    design_mat[:, 1] = trialType
-    design_mat[:, 2] = flanker
-    design_mat[:, 3] = flanker_contrast
-    design_mat[:, 4] = prevStim
-    design_mat[:, 5] = prevType
-    design_mat[:, 6] = prevChoice
-    design_mat[:, 7] = wsls
-    design_mat[:, 8] = prevReward
+    # design_mat[:, 1] = trialType
+    design_mat[:, 1] = flanker
+    design_mat[:, 2] = flanker_contrast
+    design_mat[:, 3] = prevStim
+    # design_mat[:, 5] = prevType
+    design_mat[:, 4] = prevChoice
+    design_mat[:, 5] = wsls
+    # design_mat[:, 6] = prevReward
     return design_mat
 
 
 def get_all_unnormalized_data_this_session(eid):
     # Load raw data
-    animal, session_id, choice, rxt, stim, trialType, \
-        flanker, flanker_contrast, prevStim, prevType, \
+    animal, session_id, choice, rxt, stim, \
+        flanker, flanker_contrast, prevStim, \
         prevChoice, wsls, rewarded, prevReward \
         = get_raw_data(eid)
     
@@ -174,8 +174,8 @@ def get_all_unnormalized_data_this_session(eid):
  
  # 11/29: change to fewer params 
     # Create design mat = matrix of size T x 9
-    unnormalized_inpt = create_design_mat(stim, trialType, flanker, \
-        flanker_contrast, prevStim, prevType, prevChoice, wsls, prevReward)
+    unnormalized_inpt = create_design_mat(stim, flanker, \
+        flanker_contrast, prevStim, prevChoice, wsls)
     # pdb.set_trace()
     # y = np.hstack((choice.reshape(-1,1), rxt.reshape(-1,1)))
     y =choice.reshape(-1,1)

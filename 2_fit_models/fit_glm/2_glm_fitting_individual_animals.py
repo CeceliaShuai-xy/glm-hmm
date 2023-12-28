@@ -4,7 +4,7 @@ import autograd.numpy.random as npr
 import os
 from glm_utils import load_session_fold_lookup, load_data, load_animal_list, \
     fit_glm, plot_input_vectors, append_zeros
-
+import pdb
 npr.seed(65)
 
 C = 2  # number of output types/categories
@@ -24,16 +24,16 @@ if __name__ == '__main__':
         animal_file = data_dir + animal + '_processed.npz'
         session_fold_lookup_table = load_session_fold_lookup(
             data_dir + animal + '_session_fold_lookup.npz')
-
+        # pdb.set_trace()
         for fold in range(num_folds):
             this_results_dir = results_dir + animal + '/'
 
             # Load data
             inpt, y, session = load_data(animal_file)
-            labels_for_plot = [ 'stim', 'trialType', 'flanker', \
+            labels_for_plot = [ 'stim', 'flanker', \
                            'flankerContrast', 'prevStim', \
-                            'prevType', 'prevChoice','wsls', \
-                            'prevReward', 'bias']
+                            'prevChoice','wsls', \
+                            'bias']
             y = y.astype('int')
 
             figure_directory = this_results_dir + "GLM/fold_" + str(fold) + '/'
@@ -63,6 +63,7 @@ if __name__ == '__main__':
                                                                  [this_y], M,
                                                                  C)
                 weights_for_plotting = append_zeros(recovered_weights)
+                # pdb.set_trace()
                 plot_input_vectors(weights_for_plotting,
                                    figure_directory,
                                    title="GLM fit; Final LL = " +

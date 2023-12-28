@@ -23,6 +23,7 @@ if __name__ == '__main__':
 
     animal_file = data_dir + 'all_animals_concat.npz'
     inpt, y, session = load_data(animal_file)
+    # pdb.set_trace()
     session_fold_lookup_table = load_session_fold_lookup(
         data_dir + 'all_animals_concat_session_fold_lookup.npz')
 
@@ -32,10 +33,10 @@ if __name__ == '__main__':
     
     # Fit GLM to data from single animal:
     for fold in range(num_folds):
-        labels_for_plot = [ 'stim', 'trialType', 'flanker', \
+        labels_for_plot = [ 'stim', 'flanker', \
                            'flankerContrast', 'prevStim', \
-                            'prevType', 'prevChoice','wsls', \
-                            'prevReward', 'bias']
+                            'prevChoice','wsls', \
+                            'bias']
         #
         y = y.astype('int')
 

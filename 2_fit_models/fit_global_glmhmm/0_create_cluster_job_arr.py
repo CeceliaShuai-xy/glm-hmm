@@ -2,7 +2,7 @@
 #  can be used on e.g. a cluster
 import numpy as np
 # import pdb
-K_vals = [2,3,4,5,6,7]#[2, 3, 4] #num of hidden states
+K_vals = [2,3,4]#[2, 3, 4] #num of hidden states
 num_folds = 3
 N_initializations = 5
 

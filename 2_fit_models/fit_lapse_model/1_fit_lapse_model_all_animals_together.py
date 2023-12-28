@@ -13,7 +13,7 @@ if __name__ == '__main__':
     data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
     results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit/'
 
-    num_lapse_params = 2
+    num_lapse_params = 1
     num_folds = 3
 
     # Fit GLM to all data
@@ -23,10 +23,10 @@ if __name__ == '__main__':
 
     for fold in range(num_folds):
         inpt, y, session = load_data(animal_file)
-        labels_for_plot = [ 'stim', 'Type', 'flanker',\
+        labels_for_plot = [ 'stim', 'flanker',\
                        'contrast', 'pStim',\
-                       'pType','pChoice', \
-                       'wsls', 'pReward', 'bias']
+                       'pChoice', 'wsls', \
+                       'bias']
         y = y.astype('int')
 
         sessions_to_keep = session_fold_lookup_table[np.where(

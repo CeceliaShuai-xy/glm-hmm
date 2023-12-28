@@ -315,6 +315,7 @@ def return_glmhmm_nll(inpt, y, session, session_fold_lookup_table, fold, K, D,
     train_inpt, train_y, this_train_session, M, \
     n_test, n_train = prepare_data_for_cv(
         inpt, y, session, session_fold_lookup_table, fold)
+    # pdb.set_trace()
     ll0 = calculate_baseline_test_ll(train_y,
                                      test_y, C)
     ll0_train = calculate_baseline_test_ll(
@@ -365,7 +366,7 @@ def create_cv_frame_for_plotting(cv_file):
     # pdb.set_trace()
     cvbt_folds_model = load_cv_arr(cv_file)
     glm_lapse_model = cvbt_folds_model[:3, ]
-    idx = np.array([0, 3, 4, 5,6,7,8]) #np.array([0, 3, 4, 5, 6]) # what does idx mean here???
+    idx = np.array([0, 3, 4, 5]) #np.array([0, 3, 4, 5, 6]) # what does idx mean here???
     # starts from 3, -> model_idx (__ state GLM)=  3 + K-2 -> {K=2,3,4}-> {model_idx = 3,4,5}
     cvbt_folds_model = cvbt_folds_model[idx, :]
     # Identify best cvbt:

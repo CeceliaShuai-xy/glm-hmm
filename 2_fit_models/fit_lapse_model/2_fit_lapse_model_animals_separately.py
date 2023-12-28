@@ -32,10 +32,10 @@ if __name__ == '__main__':
             inpt, y, session = load_data(animal_file)
             y = y.astype('int')
 
-            labels_for_plot = [ 'stim', 'Type', 'flanker',\
+            labels_for_plot = [ 'stim', 'flanker',\
                        'contrast', 'pStim',\
-                       'pType','pChoice', \
-                       'wsls', 'pReward', 'bias']
+                       'pChoice', 'wsls', \
+                       'bias']
 
             sessions_to_keep = session_fold_lookup_table[np.where(
                 session_fold_lookup_table[:, 1] != fold), 0]

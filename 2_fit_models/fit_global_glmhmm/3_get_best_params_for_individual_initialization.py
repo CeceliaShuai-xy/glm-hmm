@@ -21,14 +21,14 @@ if __name__ == '__main__':
     if not os.path.exists(save_directory):
         os.makedirs(save_directory)
 
-    labels_for_plot = [ 'Stim', 'Type', 'flanker',\
-                       'Contrast', 'PS',\
-                       'PT','PC', \
-                       'WSLS', 'PR', 'Bias']
+    labels_for_plot = [ 'Stim', 'flanker_ori',\
+                       'flanker_cont', 'prevStim',\
+                       'prevChoice', \
+                       'WSLS', 'Bias']
     cv_file = results_dir + "/cvbt_folds_model.npz"
     cvbt_folds_model = load_cv_arr(cv_file)
 
-    for K in range(2, 8):
+    for K in range(2, 5):
         print("K = " + str(K))
         with open(results_dir + "/best_init_cvbt_dict.json", 'r') as f:
             best_init_cvbt_dict = json.load(f)
@@ -59,17 +59,17 @@ if __name__ == '__main__':
 
         # Plot these too:
         cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306","#7209b7", "#f72585"]
-        fig = plt.figure(figsize=(4 * 4, 10),
+        fig = plt.figure(figsize=(6.5 * 10, 16),
                          dpi=80,
                          facecolor='w',
                          edgecolor='k')
-        plt.subplots_adjust(left=0.1,
-                            bottom=0.24,
+        plt.subplots_adjust(left=0.05,
+                            bottom=0.1,
                             right=0.95,
-                            top=0.7,
-                            wspace=0.8,
-                            hspace=0.5)
-        plt.subplot(1, 2, 1)
+                            top=0.85,
+                            wspace=0.2,
+                            hspace=0.1)
+        plt.subplot(1, 4, 1)
         M = weight_vectors.shape[2] - 1
         for k in range(K):
             plt.plot(range(M + 1),
@@ -80,17 +80,17 @@ if __name__ == '__main__':
                      lw=4)
         plt.xticks(list(range(0, len(labels_for_plot))),
                    labels_for_plot,
-                   rotation='90',
-                   fontsize=24)
-        plt.yticks(fontsize=30)
-        plt.legend(fontsize=15)
+                   rotation='45',
+                   fontsize=35)
+        plt.yticks(fontsize=35)
+        plt.legend(fontsize=35)
         plt.axhline(y=0, color="k", alpha=0.5, ls="--")
         # plt.ylim((-3, 14))
-        plt.ylabel("Weight", fontsize=30)
-        plt.xlabel("Covariate", fontsize=30, labelpad=20)
-        plt.title("GLM Weights: Choice = R", fontsize=40)
+        plt.ylabel("Weight", fontsize=35)
+        plt.xlabel("Covariate", fontsize=35, labelpad=20)
+        plt.title("GLM Weights: Choice = Horizontal", fontsize=40)
 
-        plt.subplot(1, 2, 2)
+        plt.subplot(1, 4, 2)
         transition_matrix = np.exp(log_transition_matrix)
         plt.imshow(transition_matrix, vmin=0, vmax=1)
         for i in range(transition_matrix.shape[0]):
@@ -102,9 +102,9 @@ if __name__ == '__main__':
                                 ha="center",
                                 va="center",
                                 color="k",
-                                fontsize=15)
-        plt.ylabel("Previous State", fontsize=30)
-        plt.xlabel("Next State", fontsize=30)
+                                fontsize=35)
+        plt.ylabel("Previous State", fontsize=35)
+        plt.xlabel("Next State", fontsize=35)
         plt.xlim(-0.5, K - 0.5)
         plt.ylim(-0.5, K - 0.5)
         plt.xticks(range(0, K), ('1', '2', '3', '4', '4', '5', '6', '7',
@@ -112,16 +112,10 @@ if __name__ == '__main__':
                    fontsize=30)
         plt.yticks(range(0, K), ('1', '2', '3', '4', '4', '5', '6', '7',
                                  '8', '9', '10')[:K],
-                   fontsize=30)
+                   fontsize=35)
         plt.title("Retrieved", fontsize=40)
-        fig.savefig(results_dir + 'best_params_cross_validation_K_' +
-                    str(K) + '_Weights.png')
 
-        fig = plt.figure(figsize=(4 * 4, 10),
-                         dpi=80,
-                         facecolor='w',
-                         edgecolor='k')
-        plt.subplot(1, 2, 1)
+        plt.subplot(1, 4, 3)
         cols = [
             "#7e1e9c", "#0343df", "#15b01a", "#bf77f6", "#95d0fc",
             "#96f97b"
@@ -161,10 +155,10 @@ if __name__ == '__main__':
             label="train",
             alpha=1,
             lw=4)
-        plt.xlabel("Model", fontsize=30)
-        plt.ylabel("Normalized LL", fontsize=30)
-        plt.xticks([0, 1, 2, 3, 4, 5, 6],
-                   ['1 State', '2 State', '3 State', '4 State', '5 State', '6 State', '7 State'],
+        plt.xlabel("Model", fontsize=35)
+        plt.ylabel("Normalized LL", fontsize=35)
+        plt.xticks([0, 1, 2, 3],
+                   ['1 State', '2 State', '3 State', '4 State'],
                    rotation=45,
                    fontsize=24)
         plt.yticks(fontsize=15)
@@ -173,14 +167,14 @@ if __name__ == '__main__':
                     label="Lapse (test)",
                     alpha=0.9,
                     lw=4)
-        plt.legend(loc='upper right', fontsize=30)
+        plt.legend(loc='upper right', fontsize=35)
         plt.tick_params(axis='y')
-        plt.yticks([0.2, 0.3, 0.4, 0.5], fontsize=30)
+        plt.yticks([0.2, 0.3, 0.4, 0.5], fontsize=35)
         plt.ylim((0.2, 0.55))
         plt.title("Model Comparison", fontsize=40)
         
         # pdb.set_trace()
-        plt.subplot(1, 2, 2)
+        plt.subplot(1, 4, 4)
         # get state occupancies:
         inpt, y, session = load_data(data_dir + 'all_animals_concat.npz')
         inpt = np.hstack((inpt, np.ones((len(inpt), 1))))
@@ -193,12 +187,12 @@ if __name__ == '__main__':
                                                     hmm_params, K, range(K))
         states_max_posterior = np.argmax(posterior_probs, axis=1)
         plt.hist(states_max_posterior)
-        plt.ylabel("# trials", fontsize=30)
-        plt.xlabel("State", fontsize=30)
-        plt.xticks(range(K), range(1, K + 1), fontsize=30)
-        plt.yticks(fontsize=30)
+        plt.ylabel("# trials", fontsize=35)
+        plt.xlabel("State", fontsize=35)
+        plt.xticks(range(K), range(1, K + 1), fontsize=35)
+        plt.yticks(fontsize=35)
         plt.title("State occuupancies", fontsize=40)
         fig.tight_layout()
 
         fig.savefig(results_dir + 'best_params_cross_validation_K_' +
-                    str(K) + '_Occupancy.png')
+                    str(K) + '.png')

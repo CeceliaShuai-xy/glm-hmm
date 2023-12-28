@@ -140,18 +140,24 @@ if __name__ == '__main__':
     temp = scaler.fit_transform(normalized_inpt)
     # normalized_inpt = temp
     '''
-    {'Stim{1,0}','TrialType {0,-1,1}','Flanker{1,0}', 
+    y = 'Choice(y1) {0,1}'
+    x = 
+    {'Stim{1,0}','Flanker_ori{1,0}', 
     'FlankerContrast' [0,8],'PrevStim {0,1}', ...
-    'PrevType {0,-1,1}', 'PrevChoice {0,1}',
-    'WSLS' {-1,1}, 'PrevReward'{-1,1}, 'Choice(y1) {0,1}','ReactionT(y2)'}
+    'PrevChoice {0,1}', 'WSLS' {-1,1}, ...
+    'PrevReward'{-1,1}}
     '''
-    normalized_inpt[:, 1] = preprocessing.scale(normalized_inpt[:, 1])
-    normalized_inpt[:, 3] = preprocessing.scale(normalized_inpt[:, 3])
+    # pdb.set_trace() 
+    # normalize the contrast
+    # normalized_inpt[:, 2] = preprocessing.scale(normalized_inpt[:, 2])
+    # > edit: only normalize the nonzero element!
+    norms = normalized_inpt[:, 2]
+    normalized_inpt[:, 2] = np.where(norms!=0,preprocessing.scale(norms),0.) 
+    
+    # normalize the wsls covariate
     normalized_inpt[:, 5] = preprocessing.scale(normalized_inpt[:, 5])
-    normalized_inpt[:, 7] = preprocessing.scale(normalized_inpt[:, 7])
-    normalized_inpt[:, 8] = preprocessing.scale(normalized_inpt[:, 8])
-    # pdb.set_trace()
-
+    # normalize the prevReward
+    # normalized_inpt[:,6] = preprocessing.scale(normalized_inpt[:, 6])
     np.savez(save_path_cluster + 'all_animals_concat' + '.npz',
              normalized_inpt,
              master_y, master_session)
