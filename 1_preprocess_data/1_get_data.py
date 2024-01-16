@@ -13,6 +13,7 @@ import numpy.random as npr
 import json
 from collections import defaultdict
 import os
+import pdb
 npr.seed(65)
 
 if __name__ == '__main__':
@@ -27,6 +28,8 @@ if __name__ == '__main__':
         os.makedirs(data_path + "Subjects/")
 
     animal_list = os.listdir(data_path + "Subjects/")
+    animal_list = [f for f in animal_list if f != '.DS_Store']
+    # pdb.set_trace()
     animal_eid_dict = defaultdict(list)
     for animal in animal_list:
         eids = [x[0] for x in os.walk(data_path + "Subjects/" + animal + "/")][1:]

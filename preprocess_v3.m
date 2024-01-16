@@ -2,7 +2,7 @@
 %  Created date: 12/17/2023
 %  Purpose: preprocess the extracted 
 %  parameters before feeding in GLM 
-%  Last edit time: 12/07/2023
+%  Last edit time: 12/17/2023
 %  Last edit made: - add more input variables and dependent variables
 % 
 % ===========================================
@@ -37,7 +37,7 @@ clear
 clc
 close all
 % load data
-animal = 'M15';
+animal = 'M1_Sal';
 load(['./data/' animal '_data.mat'])
 target_contrast = 6; 
 data_path = ['./data/Subjects/' animal '/'];
@@ -50,9 +50,16 @@ end
 choice = [];
 design_table = cell(length(mdata));
 
-f = figure;  
-f.Position = [700 1400 1400 700]; 
-sgtitle([animal " Performance"])
+if length(mdata) <= 6
+    f = figure;  
+    f.Position = [700 900 900 700]; 
+    sgtitle([animal " Performance"],'Interpreter', 'none')
+else
+    f = figure;  
+    f.Position = [700 900 1800 700]; 
+    sgtitle([animal " Performance"],'Interpreter', 'none')
+end
+
 for session_id = 1:length(mdata)
     save_path = [data_path 'session' int2str(session_id) '/'];
     if ~exist(save_path,'dir')
@@ -141,20 +148,20 @@ for session_id = 1:length(mdata)
     assert(length(prevReward) == data_length,'abnormal prevReward length')
 
     % save all vars
-%     save([save_path '/choice.mat'],"choice")
-%     save([save_path '/rxt.mat'],"rxt")
-% 
-%     save([save_path '/stim.mat'],"stim")
-%     save([save_path '/prevStim.mat'],"prevStim")
-%     save([save_path '/trialType.mat'],"trialType")
-%     save([save_path '/prevType.mat'],"prevType")
-%     save([save_path '/predChoice.mat'],"prevChoice")
-%     save([save_path '/wsls.mat'],"wsls")
-%     save([save_path '/flanker.mat'],"flanker")
-%     save([save_path '/flankerCont.mat'],"flankerCont")
-%     save([save_path '/rewarded.mat'],"rewarded")
-%     save([save_path '/prevReward.mat'],"prevReward")
-%     
+    save([save_path '/choice.mat'],"choice")
+    save([save_path '/rxt.mat'],"rxt")
+
+    save([save_path '/stim.mat'],"stim")
+    save([save_path '/prevStim.mat'],"prevStim")
+    save([save_path '/trialType.mat'],"trialType")
+    save([save_path '/prevType.mat'],"prevType")
+    save([save_path '/predChoice.mat'],"prevChoice")
+    save([save_path '/wsls.mat'],"wsls")
+    save([save_path '/flanker.mat'],"flanker")
+    save([save_path '/flankerCont.mat'],"flankerCont")
+    save([save_path '/rewarded.mat'],"rewarded")
+    save([save_path '/prevReward.mat'],"prevReward")
+    
     
 
     % not to save but to visualize inputs and y
@@ -169,13 +176,17 @@ for session_id = 1:length(mdata)
     design_table{session_id} = DesignTable;
     % performance visualization
     
-    subplot(6,1,session_id)
+    if length(mdata) <= 6
+        subplot(6,1,session_id)
+    else 
+        subplot(6,2,session_id)
+    end
     plot(find(rewarded==1),choice(rewarded==1),'.', 'color','b', 'MarkerSize', 10)
     hold on
     plot(find(rewarded==-1),choice(rewarded==-1),'.', 'color','r', 'MarkerSize', 10)
     ylim([-0.5 1.5])
-    xlim([0 200])
-    title(['Accuracy = ' num2str(sum(rewarded==1)/length(stim))])
+    xlim([0 130])
+    title(['Sess ' int2str(session_id) ' Accuracy = ' num2str(sum(rewarded==1)/length(stim))])
     xlabel('trials')
     yticks([0 1])
     yticklabels(["vertical"; "horizontal"])

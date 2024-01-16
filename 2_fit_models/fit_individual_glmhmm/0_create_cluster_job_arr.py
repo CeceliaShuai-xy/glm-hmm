@@ -4,7 +4,7 @@ import numpy as np
 
 prior_sigma = [2]
 transition_alpha = [2]
-K_vals = [2, 3, 4]
+K_vals = [2, 3, 4, 5, 6]
 num_folds = 3
 N_initializations = 5
 

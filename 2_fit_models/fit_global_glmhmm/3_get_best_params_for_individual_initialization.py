@@ -28,7 +28,7 @@ if __name__ == '__main__':
     cv_file = results_dir + "/cvbt_folds_model.npz"
     cvbt_folds_model = load_cv_arr(cv_file)
 
-    for K in range(2, 5):
+    for K in range(2, 7):
         print("K = " + str(K))
         with open(results_dir + "/best_init_cvbt_dict.json", 'r') as f:
             best_init_cvbt_dict = json.load(f)
@@ -157,8 +157,8 @@ if __name__ == '__main__':
             lw=4)
         plt.xlabel("Model", fontsize=35)
         plt.ylabel("Normalized LL", fontsize=35)
-        plt.xticks([0, 1, 2, 3],
-                   ['1 State', '2 State', '3 State', '4 State'],
+        plt.xticks([0, 1, 2, 3, 4, 5],
+                   ['1 State', '2 State', '3 State', '4 State', '5 State', '6 State'],
                    rotation=45,
                    fontsize=24)
         plt.yticks(fontsize=15)
@@ -196,3 +196,4 @@ if __name__ == '__main__':
 
         fig.savefig(results_dir + 'best_params_cross_validation_K_' +
                     str(K) + '.png')
+        plt.close()

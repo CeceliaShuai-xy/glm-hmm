@@ -33,7 +33,7 @@ if __name__ == '__main__':
         cv_file = results_this_animal_dir + "/cvbt_folds_model.npz"
         cvbt_folds_model = load_cv_arr(cv_file)
 
-        for K in range(2, 5):
+        for K in range(2, 7):
             save_dir = results_dir + 'params_all_animals/K_' + str(K) + '/'
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir)
@@ -54,7 +54,8 @@ if __name__ == '__main__':
             init_state_dist = hmm_params[0][0]
 
             # Plot these too:
-            cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306"]
+            # cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306"]
+            cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306","#7209b7", "#f72585"]
             fig = plt.figure(figsize=(6.5 * 10, 16),
                              dpi=80,
                              facecolor='w',
@@ -153,8 +154,8 @@ if __name__ == '__main__':
             plt.scatter(loc_best, best_val, s=400, color='black', marker="*")
             plt.xlabel("Model", fontsize=30)
             plt.ylabel("Normalized LL", fontsize=30)
-            plt.xticks([0, 1, 2, 3],
-                       ['1 State', '2 State', '3 State', '4 State'],
+            plt.xticks([0, 1, 2, 3, 4, 5],
+                       ['1 State', '2 State', '3 State', '4 State', '5 State', '6 State'],
                     #    ['1 State', '2 State', '3 State', '4 State'],
                        rotation=45,
                        fontsize=24)

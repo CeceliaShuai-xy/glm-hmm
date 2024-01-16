@@ -3,7 +3,7 @@ Author Cecelia Shuai
 Created date: 11/29/2023
 Purpose: create design matrix for GLM-HMM
 Last edit time: 12/17/2023
-Last edit made: 9 covariates and 2 dependent variables
+Last edit made: 9 covariates and 1 dependent variable
 '''
 
 '''

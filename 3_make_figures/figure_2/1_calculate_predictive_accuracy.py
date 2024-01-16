@@ -17,7 +17,8 @@ from plotting_utils import load_glmhmm_data, load_animal_list, load_cv_arr, \
     calculate_predictive_accuracy, calculate_predictive_acc_glm, \
     calculate_predictive_acc_lapse_model
 
-cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306"]
+# cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306"]
+cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306","#7209b7", "#f72585"]
 
 if __name__ == '__main__':
     data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
@@ -79,7 +80,7 @@ if __name__ == '__main__':
                 predictive_acc_lapse.append(predictive_acc)
             predictive_acc_mat.append(predictive_acc_lapse)
 
-        for K in range(2, 5):
+        for K in range(2, 7):
             with open(results_dir + "/best_init_cvbt_dict.json", 'r') as f:
                 best_init_cvbt_dict = json.load(f)
 

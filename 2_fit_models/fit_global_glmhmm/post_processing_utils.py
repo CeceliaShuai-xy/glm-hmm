@@ -366,7 +366,7 @@ def create_cv_frame_for_plotting(cv_file):
     # pdb.set_trace()
     cvbt_folds_model = load_cv_arr(cv_file)
     glm_lapse_model = cvbt_folds_model[:3, ]
-    idx = np.array([0, 3, 4, 5]) #np.array([0, 3, 4, 5, 6]) # what does idx mean here???
+    idx = np.array([0, 3, 4, 5, 6, 7]) #np.array([0, 3, 4, 5, 6]) # what does idx mean here???
     # starts from 3, -> model_idx (__ state GLM)=  3 + K-2 -> {K=2,3,4}-> {model_idx = 3,4,5}
     cvbt_folds_model = cvbt_folds_model[idx, :]
     # Identify best cvbt:
