@@ -3,7 +3,7 @@ Revised version of Ashwood et al. code to adapt to fit mice behavioral data from
 GLM-HMM. The original version of the GLM-HMM repository reproduces figures in ["Mice alternate between discrete strategies
  during perceptual decision-making"](https://www.biorxiv.org/content/10.1101/2020.10.19.346353v4.full.pdf) from Ashwood, Roy, Stone, IBL, Urai, Churchland, Pouget and Pillow (2020). This repository revised the code mentioned above to suit the specific behavioral task of interest and it should be run in the following order:
 
-To extract the behavioral data of interest, 
+To extract the behavioral data of interest:
  (1) run a Matlab script "preprocess_v3" (most updated version), which extracts the desrived task-related variables
 and saves in the corresponding data directories. 
 Then to preprocess the data and do some feature engineerinh, 
