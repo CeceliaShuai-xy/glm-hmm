@@ -3,15 +3,17 @@ Revised version of Ashwood et al. code to adapt to fit mice behavioral data from
 GLM-HMM. The original version of the GLM-HMM repository reproduces figures in ["Mice alternate between discrete strategies
  during perceptual decision-making"](https://www.biorxiv.org/content/10.1101/2020.10.19.346353v4.full.pdf) from Ashwood, Roy, Stone, IBL, Urai, Churchland, Pouget and Pillow (2020). This repository revised the code mentioned above to suit the specific behavioral task of interest and it should be run in the following order:
 
-To extract the behavioral data of interest, (1) run a Matlab script "preprocess_v3" (most updated version), which extracts the desrived task-related variables
+To extract the behavioral data of interest, 
+ (1) run a Matlab script "preprocess_v3" (most updated version), which extracts the desrived task-related variables
 and saves in the corresponding data directories. 
-Then to preprocess the data and do some feature engineerinh, (2) the user should run the scripts in "1_preprocess_data" in the order indicated by the number at the beginning of the file name (i.e. run "1_get_data.py" first to obtain the data saved in the data folder and then run "2_create_design_mat.py" to obtain the design matrix used as input for all of the models). 
+Then to preprocess the data and do some feature engineerinh, 
+ (2) the user should run the scripts in "1_preprocess_data" in the order indicated by the number at the beginning of the file name (i.e. run "1_get_data.py" first to obtain the data saved in the data folder and then run "2_create_design_mat.py" to obtain the design matrix used as input for all of the models). 
 Next, you can fit the GLM, lapse and GLM-HMM models discussed in the paper using the code contained in "2_fit_models".  
-(3) The GLM should be run first as the GLM fit is used to initialize the global GLM-HMM (the model that is fit with data from all animals). 
-(4) The lapse model fits, while not used for any initialization purposes, should be run next so as to be able to perform model comparison with the global and individual GLM-HMMs. 
-(5) The global GLM-HMM should be run next, as it is used to initialize the models for all individual animals.  
-(6) Finally individual GLM-HMMs can be fit to the data from individual animals using the code in the associated directory. 
-(7) With the trained model parameters, user can generate the graphs similar to Ashwood et al. by running scripts in "2_make_figures". Note that this repository ONLY updated the code in folders "figure_2" and "figure_3", given how far the project proceeded. 
+ (3) The GLM should be run first as the GLM fit is used to initialize the global GLM-HMM (the model that is fit with data from all animals). 
+ (4) The lapse model fits, while not used for any initialization purposes, should be run next so as to be able to perform model comparison with the global and individual GLM-HMMs. 
+ (5) The global GLM-HMM should be run next, as it is used to initialize the models for all individual animals.  
+ (6) Finally individual GLM-HMMs can be fit to the data from individual animals using the code in the associated directory. 
+ (7) With the trained model parameters, user can generate the graphs similar to Ashwood et al. by running scripts in "2_make_figures". Note that this repository ONLY updated the code in folders "figure_2" and "figure_3", given how far the project proceeded. 
 
 *Note that the directories in the code should be changed accordingly*
 
