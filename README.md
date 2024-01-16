@@ -1,36 +1,32 @@
 # glm-hmm
-Code to reproduce figures in ["Mice alternate between discrete strategies
- during perceptual decision-making"](https://www.biorxiv.org/content/10.1101/2020.10.19.346353v4.full.pdf) from Ashwood, Roy, Stone, IBL, Urai, Churchland, Pouget and Pillow (2020).  Note: while this code reproduces the figures/analyses for our paper, the easiest way to get started applying the GLM-HMM to your own data, is with [this notebook](https://github.com/zashwood/ssm/blob/master/notebooks/2b%20Input%20Driven%20Observations%20(GLM-HMM).ipynb). 
+Revised version of Ashwood et al. code to adapt to fit mice behavioral data from Touchscreen Attentional Task (You & Mysore, 2020) with
+GLM-HMM. The original version of the code reproduces figures in ["Mice alternate between discrete strategies
+ during perceptual decision-making"](https://www.biorxiv.org/content/10.1101/2020.10.19.346353v4.full.pdf) from Ashwood, Roy, Stone, IBL, Urai, Churchland, Pouget and Pillow (2020).  Note: while this code reproduces the figures/analyses for our paper, the easiest way to get started applying the GLM-HMM to your own data, is with [this notebook](https://github.com/zashwood/ssm/blob/master/notebooks/2b%20Input%20Driven%20Observations%20(GLM-HMM).ipynb). This repository revised the code mentioned above to suit the specific behavioral task of interest and it should be run in the following order:
 
 Code is ordered so that the IBL dataset discussed in the paper is
  preprocessed into the
  desired
- format by
+ format by (1) a Matlab script "preprocess_v3" (most updated version), which extracts the desrived test-related variables
+ and saves in the corresponding data folders. Then (2) user should run
  the scripts in "1_preprocess_data". Within this directory, run the scripts
   in the order indicated by the number at the beginning of the file name (i.e
   . run
-   "1_download_data_begin_processing.py" first to obtain the
-   IBL
-   data locally and then run "2_create_design_mat.py" to obtain the design
-    matrix used as input for all of the models discussed in our paper). Next
+   "1_get_data.py" first to obtain the
+   data saved in the data folder and then run "2_create_design_mat.py" to obtain the design
+    matrix used as input for all of the models). Next
     , you can fit the GLM, lapse and GLM-HMM models discussed in the paper using
-      the code contained in "2_fit_models".  As discussed in the paper, the
+      the code contained in "2_fit_models".  (3) The
        GLM should be run first as the GLM fit is used to initialize the
-        global GLM-HMM (the model that is fit with data from all animals).  The
-           lapse model fits, while not used for any initialization purposes, should be run next so as to be able to perform model comparison with the global and individual GLM-HMMs. The
+        global GLM-HMM (the model that is fit with data from all animals). (4) The
+           lapse model fits, while not used for any initialization purposes, should be run next so as to be able to perform model comparison with the global and individual GLM-HMMs. (5) The
          global GLM-HMM should be run next, as it is used to initialize the
           models for all individual animals.  Finally GLM-HMMs can
            be fit to the data from individual animals using the code in the
-            associated directory. 
-          
-Assuming that you have downloaded and preprocessed the datasets, and that you
- have fit all models on these datasets,  you can reproduce the figures of our
-  paper corresponding to the IBL dataset by
-   running the code contained in "3_make_figures".  In order to produce
-    Figures 5 and 7, replace the IBL URL in the preprocessing pipeline
-     scripts, with the URLs for the [Odoemene et al. (2018)](https://doi.org/10.14224/1.38944) and [Urai et al. (2017)](https://doi.org/10.6084/m9.figshare.4300043) datasets, and rerun the GLM, lapse and GLM-HMM models
-      on these datasets before running the provided figure plotting code.
+            associated directory. With the trained  model, user can generate the graphs similar to Ashwood et al. by running scripts in 
+            "2_make_figures". Note that this repository ONLY updated the code in folders "figure_2" and "figure_3", given how far the
+            project proceeded. 
 
+** Note that the path in the code should be changed accordingly.**
 
 Before beginning, create a conda environment from the environment yaml file by running 
 ```
