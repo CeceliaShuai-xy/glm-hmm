@@ -2,8 +2,8 @@
 %  Created date: 12/17/2023
 %  Purpose: preprocess the extracted 
 %  parameters before feeding in GLM 
-%  Last edit time: 12/17/2023
-%  Last edit made: - add more input variables and dependent variables
+%  Last edit time: 1/16/2024
+%  Last edit made: - add more input variables 
 % 
 % ===========================================
 % --------- DATA TO BE PROCESSED ------------
@@ -36,7 +36,7 @@
 clear
 clc
 close all
-% load data
+% load data according to the animal id
 animal = 'M1_Sal';
 load(['./data/' animal '_data.mat'])
 target_contrast = 6; 
@@ -105,8 +105,8 @@ for session_id = 1:length(mdata)
     choice = rewarded;
     % stim = {0,1}
     % choice = {0,1}
-    % -1 incorrect -> stim oposite
-    % 1 correct -> stim
+    % reward = -1 incorrect -> choice = oposite of stim 
+    % reward = 1 correct -> choice = stim orientation
     for idx = 1:length(rewarded)
         if rewarded(idx)== -1
             % incorrect trials
@@ -133,24 +133,12 @@ for session_id = 1:length(mdata)
     rxt = session_data.rxt_arr';
     rxt = rxt(2:end);
 
-    % check all vars are 'legal'
-    assert(length(choice) == data_length,'abnormal choice length')
-    assert(length(rxt) == data_length,'abnormal rxt length')
-    assert(length(stim) == data_length,'abnormal stim length')
-    assert(length(prevStim) == data_length,'abnormal prevStim length')
-    assert(length(trialType) == data_length,'abnormal trialType length')
-    assert(length(prevType) == data_length,'abnormal prevType length')
-    assert(length(prevChoice) == data_length,'abnormal prevChoice length')
-    assert(length(wsls) == data_length,'abnormal wsls length')
-    assert(length(flankerCont) == data_length,'abnormal flankerCont length')
-    assert(length(flanker) == data_length,'abnormal flanker length')
-    assert(length(rewarded) == data_length,'abnormal rewarded length')
-    assert(length(prevReward) == data_length,'abnormal prevReward length')
-
     % save all vars
+    % this step is to avoid using python to read table/struct from matlab, it could
+    % be simplified but since we just need to run this code once for each animal, it
+    % may just work fine with simple code
     save([save_path '/choice.mat'],"choice")
     save([save_path '/rxt.mat'],"rxt")
-
     save([save_path '/stim.mat'],"stim")
     save([save_path '/prevStim.mat'],"prevStim")
     save([save_path '/trialType.mat'],"trialType")
@@ -164,7 +152,8 @@ for session_id = 1:length(mdata)
     
     
 
-    % not to save but to visualize inputs and y
+    % check in the design_table to inspect 
+    % if all variables have expected values
     X = horzcat(stim', trialType', flanker', ...
         flankerCont', prevStim', prevType', ...
         prevChoice', wsls',prevReward');
@@ -174,8 +163,9 @@ for session_id = 1:length(mdata)
         {'Stim','TrialType','Flanker', 'FlankerContrast','PrevStim', ...
         'PrevType', 'PrevChoice','WSLS', 'PrevReward', 'Choice(y1)','ReactionT(y2)'});
     design_table{session_id} = DesignTable;
-    % performance visualization
     
+    
+    % performance visualization
     if length(mdata) <= 6
         subplot(6,1,session_id)
     else 
