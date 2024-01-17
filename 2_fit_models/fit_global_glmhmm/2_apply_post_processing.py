@@ -9,8 +9,8 @@ from post_processing_utils import load_data, load_session_fold_lookup, \
     return_glmhmm_nll, return_lapse_nll
 import pdb
 if __name__ == '__main__':
-    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
-    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit'
+    data_dir = '../../data/data_for_cluster/'
+    results_dir = '../../results/global_fit'
 
     # Load data
     inpt, y, session = load_data(data_dir + 'all_animals_concat.npz')

@@ -11,8 +11,8 @@ N_em_iters = 300  # number of EM iterations
 USE_CLUSTER = False
 
 if __name__ == '__main__':
-    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
-    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit/'
+    data_dir = '../../data/data_for_cluster/'
+    results_dir = '../../results/global_fit/'
 
     if USE_CLUSTER:
         z = int(sys.argv[1])

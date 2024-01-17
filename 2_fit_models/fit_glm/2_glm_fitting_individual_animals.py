@@ -11,11 +11,11 @@ C = 2  # number of output types/categories
 N_initializations = 10
 
 if __name__ == '__main__':
-    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    data_dir = '../../data/data_for_cluster/data_by_animal/'
     num_folds = 3
     animal_list = load_animal_list(data_dir + 'animal_list.npz')
 
-    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
+    results_dir = '../../results/individual_fit/'
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 

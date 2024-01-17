@@ -21,8 +21,8 @@ from plotting_utils import load_glmhmm_data, load_animal_list, load_cv_arr, \
 cols = ["#e74c3c", "#15b01a", "#7e1e9c", "#3498db", "#f97306","#7209b7", "#f72585"]
 
 if __name__ == '__main__':
-    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
-    overall_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
+    data_dir = '../../data/data_for_cluster/data_by_animal/'
+    overall_dir = '../../results/individual_fit/'
     animal_list = load_animal_list(data_dir + 'animal_list.npz')
     sigma_val = 2
     alpha_val = 2

@@ -15,10 +15,10 @@ from post_processing_utils import load_data, load_glmhmm_data, load_cv_arr, \
     partition_data_by_session, get_marginal_posterior
 
 if __name__ == '__main__':
-    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
+    data_dir = '../../data/data_for_cluster/data_by_animal/'
     prior_sigma = 2
     transition_alpha = 2
-    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
+    results_dir = '../../results/individual_fit/'
 
     labels_for_plot = [ 'stim','flanker',\
                        'contrast', 'pStim',\

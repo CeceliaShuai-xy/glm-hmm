@@ -39,7 +39,7 @@ import pdb
 npr.seed(65)
 
 if __name__ == '__main__':
-    data_path = "/Users/cecelia/Desktop/glm-hmm/data/"
+    data_path = "../data/"
     save_path_cluster = data_path + "data_for_cluster/"
     # Create directories for saving data:
     if not os.path.exists(save_path_cluster):

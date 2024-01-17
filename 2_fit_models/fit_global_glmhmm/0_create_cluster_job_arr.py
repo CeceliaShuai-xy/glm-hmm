@@ -13,5 +13,5 @@ if __name__ == '__main__':
             for j in range(N_initializations):
                 cluster_job_arr.append([K, i, j])
     # pdb.set_trace()
-    np.savez('/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/cluster_job_arr.npz',
+    np.savez('../../data/data_for_cluster/cluster_job_arr.npz',
              cluster_job_arr)

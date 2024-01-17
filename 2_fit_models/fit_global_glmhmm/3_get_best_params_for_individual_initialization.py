@@ -14,8 +14,8 @@ import pdb
 
 if __name__ == '__main__':
 
-    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
-    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit/'
+    data_dir = '../../data/data_for_cluster/'
+    results_dir = '../../results/global_fit/'
     save_directory = data_dir + "best_global_params/"
 
     if not os.path.exists(save_directory):

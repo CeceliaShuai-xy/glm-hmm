@@ -10,11 +10,11 @@ import pdb
 np.random.seed(65)
 
 if __name__ == '__main__':
-
+    # Please run this script with num_lapse_params = 1 and 2 respectively
     num_lapse_params = 2
 
-    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
-    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
+    data_dir = '../../data/data_for_cluster/data_by_animal/'
+    results_dir = '../../results/individual_fit/'
 
     num_folds = 3
     animal_list = load_animal_list(data_dir + 'animal_list.npz')

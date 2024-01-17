@@ -1,11 +1,10 @@
 '''
 Author Cecelia Shuai
 Created date: 11/29/2023
-Purpose: Get Ninad's extracted data & 
+Purpose: Get extracted data & 
             Save a dictionary of each animal
             and its corresponding dir
-Last edit time: 11/29/2023
-Last edit made:     
+Last edit time: 12/15/2023
 '''
 import numpy as np
 import glob
@@ -17,7 +16,7 @@ import pdb
 npr.seed(65)
 
 if __name__ == '__main__':
-    data_path = "/Users/cecelia/Desktop/glm-hmm/data/"
+    data_path = "../data/"
     os.chdir(data_path)
     
     # create directory for saving data:

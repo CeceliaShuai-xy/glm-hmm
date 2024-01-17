@@ -9,9 +9,9 @@ N_em_iters = 300  # number of EM iterations
 USE_CLUSTER = False
 
 if __name__ == '__main__':
-    global_data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
+    global_data_dir = '../../data/data_for_cluster/'
     data_dir = global_data_dir + 'data_by_animal/'
-    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/'
+    results_dir = '../../results/individual_fit/'
     sys.path.insert(1, '../fit_global_glmhmm/')
     # pdb.set_trace()
     if USE_CLUSTER:

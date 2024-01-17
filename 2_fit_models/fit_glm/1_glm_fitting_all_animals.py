@@ -18,7 +18,7 @@ C = 2  # number of output types/categories -> vertical, horizontal
 N_initializations = 10
 
 if __name__ == '__main__':
-    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
+    data_dir = '../../data/data_for_cluster/'
     num_folds = 3
 
     animal_file = data_dir + 'all_animals_concat.npz'
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     session_fold_lookup_table = load_session_fold_lookup(
         data_dir + 'all_animals_concat_session_fold_lookup.npz')
 
-    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit/'
+    results_dir = '../../results/global_fit/'
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
     

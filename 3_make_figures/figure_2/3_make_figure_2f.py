@@ -20,8 +20,8 @@ if __name__ == '__main__':
     for animal in animal_array:
         for K in K_list:
 
-            data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/data_by_animal/'
-            results_dir = '/Users/cecelia/Desktop/glm-hmm/results/individual_fit/' + animal + '/'
+            data_dir = '../../data/data_for_cluster/data_by_animal/'
+            results_dir = '../../results/individual_fit/' + animal + '/'
             figure_dir = '../../figures/figure_2' + '_' + animal + '_K' + str(K) + '/'
 
             accuracies_to_plot = []

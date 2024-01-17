@@ -10,10 +10,12 @@ np.random.seed(65)
 
 if __name__ == '__main__':
 
-    data_dir = '/Users/cecelia/Desktop/glm-hmm/data/data_for_cluster/'
-    results_dir = '/Users/cecelia/Desktop/glm-hmm/results/global_fit/'
+    data_dir = '../../data/data_for_cluster/'
+    results_dir = '../../results/global_fit/'
 
+    # Please run this script with num_lapse_params = 1 and 2 respectively
     num_lapse_params = 1
+    
     num_folds = 3
 
     # Fit GLM to all data
